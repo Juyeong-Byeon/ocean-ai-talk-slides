@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오션스탭 AI 특강 · 도구 모음</title>
+<style>
+  :root{--bg:#05070e;--ink:#eef4f9;--muted:#8ea2ba;--accent:#13d6c3;--blue:#4d84ff;--blue2:#7aa2ff;--line:rgba(255,255,255,.1);--card:rgba(255,255,255,.045);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);min-height:100vh;
+    font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",-apple-system,sans-serif;-webkit-font-smoothing:antialiased;
+    display:flex;align-items:center;justify-content:center;padding:6vh 20px;}
+  .wrap{width:min(880px,100%);}
+  .kicker{color:var(--accent);font-weight:800;font-size:13px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;}
+  h1{font-size:clamp(28px,5vw,44px);font-weight:800;letter-spacing:-.02em;line-height:1.15;}
+  .grad{background:linear-gradient(100deg,var(--blue2),var(--accent) 75%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .sub{color:var(--muted);margin-top:14px;font-size:clamp(15px,2vw,18px);line-height:1.6;}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px;}
+  @media(max-width:680px){.cards{grid-template-columns:1fr;}}
+  a.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;text-decoration:none;color:inherit;
+    transition:transform .18s ease,border-color .18s ease,background .18s ease;}
+  a.card:hover{transform:translateY(-3px);border-color:var(--blue);background:rgba(77,132,255,.08);}
+  a.card .ic{font-size:30px;}
+  a.card .t{font-weight:800;font-size:clamp(18px,2.4vw,22px);margin:12px 0 6px;}
+  a.card .d{color:var(--muted);font-size:14px;line-height:1.55;}
+  a.card .go{margin-top:16px;color:var(--blue2);font-weight:800;font-size:14px;}
+  .back{display:inline-block;margin-top:30px;color:var(--muted);text-decoration:none;font-size:14px;border-bottom:1px solid var(--line);padding-bottom:2px;}
+  .back:hover{color:var(--ink);}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="kicker">오션스탭 알럼나이 · AI 특강</div>
+    <h1><span class="grad">내 업무를 도구로</span> 바꾸기 — 도구 모음</h1>
+    <p class="sub">특강에서 쓴 도구들입니다. 설치 없이 브라우저에서 바로 열어 쓰세요.</p>
+    <div class="cards">
+      <a class="card" href="prompt-builder.html">
+        <div class="ic">🛠️</div>
+        <div class="t">업무툴 프롬프트 빌더</div>
+        <div class="d">반복 업무를 적으면, ChatGPT에 붙여넣어 나만의 도구를 만들 수 있는 프롬프트를 생성합니다.</div>
+        <div class="go">열기 →</div>
+      </a>
+      <a class="card" href="quote-builder.html">
+        <div class="ic">🧾</div>
+        <div class="t">견적서 작성 프로그램</div>
+        <div class="d">품목·수량 입력 → 금액 자동 계산 → 견적서 PDF, 첨부 병합, 메일 문구까지 화면 하나에서.</div>
+        <div class="go">열기 →</div>
+      </a>
+    </div>
+    <a class="back" href="../">← 발표 슬라이드로 돌아가기</a>
+  </div>
+</body>
+</html>

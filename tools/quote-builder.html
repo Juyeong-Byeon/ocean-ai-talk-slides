@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>견적서 + 첨부 문서 PDF 발송 툴</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --danger: #dc2626;
+      --success: #15803d;
+      --soft-blue: #eff6ff;
+      --soft-green: #f0fdf4;
+      --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      color: white;
+      padding: 36px 20px;
+    }
+
+    header .wrap, main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      letter-spacing: -0.03em;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 16px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 20px;
+      padding: 24px 0 48px;
+    }
+
+    .section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      margin: 0 0 14px;
+      font-size: 19px;
+      letter-spacing: -0.02em;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: -6px;
+      margin-bottom: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 7px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 12px 13px;
+      font-size: 15px;
+      outline: none;
+      background: white;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 96px;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+
+    .items-table th,
+    .items-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .items-table th {
+      background: #f9fafb;
+      font-size: 13px;
+      color: #374151;
+    }
+
+    .items-table tr:last-child td { border-bottom: none; }
+    .items-table input { padding: 9px; border-radius: 9px; }
+
+    .row-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 15px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 14px;
+      transition: transform 0.08s, background 0.15s, opacity 0.15s;
+    }
+
+    button:active { transform: translateY(1px); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { background: #eef2ff; color: #1e40af; }
+    .btn-light { background: #f3f4f6; color: #374151; }
+    .btn-danger { background: #fee2e2; color: var(--danger); }
+    .btn-success { background: #dcfce7; color: var(--success); }
+
+    .button-stack {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .summary-box {
+      background: var(--soft-blue);
+      border: 1px solid #bfdbfe;
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px dashed #bfdbfe;
+    }
+
+    .summary-line:last-child { border-bottom: 0; }
+    .summary-line strong { font-size: 18px; }
+
+    .notice {
+      display: none;
+      border-radius: 14px;
+      padding: 13px 14px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      white-space: pre-line;
+    }
+
+    .notice.error {
+      display: block;
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .notice.ok {
+      display: block;
+      background: var(--soft-green);
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .preview {
+      position: sticky;
+      top: 16px;
+      align-self: start;
+    }
+
+    .quote-paper {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+      min-height: 420px;
+    }
+
+    .quote-paper h3 {
+      text-align: center;
+      font-size: 25px;
+      margin: 4px 0 18px;
+      letter-spacing: 0.08em;
+    }
+
+    .meta-table, .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    .meta-table th, .meta-table td,
+    .preview-table th, .preview-table td {
+      border: 1px solid var(--line);
+      padding: 8px;
+    }
+
+    .meta-table th, .preview-table th { background: #f9fafb; }
+    .right { text-align: right; }
+    .center { text-align: center; }
+
+    .mail-box {
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      white-space: pre-wrap;
+      font-size: 14px;
+      min-height: 150px;
+    }
+
+    .file-list {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .file-list li {
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    .file-list li:last-child { border-bottom: 0; }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 960px) {
+      main { grid-template-columns: 1fr; }
+      .preview { position: static; }
+    }
+
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: 1fr; }
+      .full { grid-column: auto; }
+      .items-table { display: block; overflow-x: auto; }
+      header { padding: 28px 16px; }
+      h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>견적서 + 첨부 문서 PDF 발송 툴</h1>
+      <p>거래처 정보와 품목을 입력하면 견적서를 만들고, 첨부 문서와 함께 PDF/ZIP으로 정리합니다.</p>
+    </div>
+  </header>
+
+  <main>
+    <div>
+      <div id="notice" class="notice"></div>
+
+      <section class="section">
+        <h2>1. 거래처 정보</h2>
+        <p class="hint">견적서를 받을 거래처와 메일 발송에 필요한 정보를 입력하세요.</p>
+        <div class="grid">
+          <div>
+            <label for="clientName">거래처 이름 *</label>
+            <input id="clientName" type="text" placeholder="예: 오션스탭 주식회사" />
+          </div>
+          <div>
+            <label for="clientEmail">거래처 이메일 *</label>
+            <input id="clientEmail" type="email" placeholder="예: client@example.com" />
+          </div>
+          <div>
+            <label for="quoteTitle">견적 제목 *</label>
+            <input id="quoteTitle" type="text" placeholder="예: 홈페이지 제작 견적" />
+          </div>
+          <div>
+            <label for="quoteDate">견적일</label>
+            <input id="quoteDate" type="date" />
+          </div>
+          <div>
+            <label for="senderName">보내는 사람 / 회사명 *</label>
+            <input id="senderName" type="text" placeholder="예: 변주영 / 주영컴퍼니" />
+          </div>
+          <div>
+            <label for="senderEmail">보내는 사람 이메일</label>
+            <input id="senderEmail" type="email" placeholder="예: me@example.com" />
+          </div>
+          <div class="full">
+            <label for="memo">견적서 하단 안내 문구</label>
+            <textarea id="memo" placeholder="예: 본 견적의 유효기간은 견적일로부터 14일입니다. 세부 내용은 협의 후 조정될 수 있습니다."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>2. 품목과 수량</h2>
+        <p class="hint">품목명, 수량, 단가를 입력하면 공급가액과 세액, 총액을 자동 계산합니다.</p>
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th style="min-width: 180px;">품목명</th>
+              <th style="width: 90px;">수량</th>
+              <th style="width: 130px;">단가</th>
+              <th style="width: 140px;">금액</th>
+              <th style="width: 70px;">삭제</th>
+            </tr>
+          </thead>
+          <tbody id="itemBody"></tbody>
+        </table>
+        <div class="row-actions">
+          <button class="btn-secondary" type="button" onclick="addItemRow()">+ 품목 추가</button>
+          <button class="btn-light" type="button" onclick="fillSample()">예시 입력</button>
+        </div>
+        <div class="summary-box">
+          <div class="summary-line"><span>공급가액</span><b id="subtotalText">0원</b></div>
+          <div class="summary-line"><span>부가세 10%</span><b id="taxText">0원</b></div>
+          <div class="summary-line"><span>최종 견적 금액</span><strong id="totalText">0원</strong></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>3. 함께 묶을 첨부 문서</h2>
+        <p class="hint">기존 PDF는 견적서 뒤에 합쳐집니다. CSV는 PDF 안에 텍스트 페이지로 추가됩니다.</p>
+        <label for="attachments">첨부 파일 선택</label>
+        <input id="attachments" type="file" multiple accept=".pdf,.csv,application/pdf,text/csv" />
+        <ul id="fileList" class="file-list"></ul>
+      </section>
+
+      <section class="section">
+        <h2>4. 결과물 만들기</h2>
+        <p class="hint">먼저 미리보기를 확인한 뒤 필요한 파일을 다운로드하세요.</p>
+        <div class="button-stack">
+          <button class="btn-primary" type="button" onclick="downloadQuotePdf()">견적서 PDF 다운로드</button>
+          <button class="btn-primary" type="button" onclick="downloadMergedPdf()">견적서 + 첨부 문서 PDF 다운로드</button>
+          <button class="btn-success" type="button" onclick="downloadZip()">PDF와 메일 문구 ZIP으로 받기</button>
+          <button class="btn-light" type="button" onclick="copyMailText()">메일 문구 복사하기</button>
+        </div>
+        <p class="small">※ 메일 발송은 보안상 브라우저에서 직접 보내지 않고, 복사 가능한 메일 문구와 파일 다운로드로 처리합니다.</p>
+      </section>
+    </div>
+
+    <aside class="preview">
+      <section class="section">
+        <h2>미리보기</h2>
+        <div class="quote-paper" id="previewArea"></div>
+      </section>
+
+      <section class="section">
+        <h2>복사할 메일 문구</h2>
+        <div id="mailPreview" class="mail-box"></div>
+      </section>
+    </aside>
+  </main>
+
+  <script>
+    const { jsPDF } = window.jspdf;
+    const { PDFDocument, StandardFonts, rgb } = PDFLib;
+
+    const state = {
+      files: []
+    };
+
+    const els = {
+      notice: document.getElementById('notice'),
+      itemBody: document.getElementById('itemBody'),
+      fileInput: document.getElementById('attachments'),
+      fileList: document.getElementById('fileList'),
+      previewArea: document.getElementById('previewArea'),
+      mailPreview: document.getElementById('mailPreview'),
+      subtotalText: document.getElementById('subtotalText'),
+      taxText: document.getElementById('taxText'),
+      totalText: document.getElementById('totalText')
+    };
+
+    const fields = [
+      'clientName', 'clientEmail', 'quoteTitle', 'quoteDate',
+      'senderName', 'senderEmail', 'memo'
+    ];
+
+    function money(value) {
+      const number = Number(value || 0);
+      return number.toLocaleString('ko-KR') + '원';
+    }
+
+    function safeText(value, fallback = '-') {
+      const text = String(value || '').trim();
+      return text || fallback;
+    }
+
+    function getField(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function setNotice(message, type = 'error') {
+      els.notice.className = 'notice ' + type;
+      els.notice.textContent = message;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function clearNotice() {
+      els.notice.className = 'notice';
+      els.notice.textContent = '';
+    }
+
+    function today() {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function addItemRow(item = {}) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input class="item-name" type="text" placeholder="예: AI 업무 자동화 컨설팅" value="${item.name || ''}"></td>
+        <td><input class="item-qty" type="number" min="0" step="1" value="${item.qty || 1}"></td>
+        <td><input class="item-price" type="number" min="0" step="1000" value="${item.price || 0}"></td>
+        <td class="item-total right">0원</td>
+        <td><button class="btn-danger" type="button" onclick="removeItemRow(this)">삭제</button></td>
+      `;
+      els.itemBody.appendChild(tr);
+      tr.querySelectorAll('input').forEach(input => input.addEventListener('input', updateAll));
+      updateAll();
+    }
+
+    function removeItemRow(button) {
+      if (els.itemBody.children.length <= 1) {
+        setNotice('품목은 최소 1개 이상 필요합니다.', 'error');
+        return;
+      }
+      button.closest('tr').remove();
+      updateAll();
+    }
+
+    function getItems() {
+      return [...els.itemBody.querySelectorAll('tr')].map(row => {
+        const name = row.querySelector('.item-name').value.trim();
+        const qty = Number(row.querySelector('.item-qty').value || 0);
+        const price = Number(row.querySelector('.item-price').value || 0);
+        return { name, qty, price, amount: qty * price };
+      });
+    }
+
+    function getTotals() {
+      const subtotal = getItems().reduce((sum, item) => sum + item.amount, 0);
+      const tax = Math.round(subtotal * 0.1);
+      const total = subtotal + tax;
+      return { subtotal, tax, total };
+    }
+
+    function validateRequired() {
+      const missing = [];
+      if (!getField('clientName')) missing.push('거래처 이름');
+      if (!getField('clientEmail')) missing.push('거래처 이메일');
+      if (!getField('quoteTitle')) missing.push('견적 제목');
+      if (!getField('senderName')) missing.push('보내는 사람 / 회사명');
+
+      const validItems = getItems().filter(item => item.name && item.qty > 0 && item.price >= 0);
+      if (validItems.length === 0) missing.push('품목 1개 이상');
+
+      if (missing.length > 0) {
+        setNotice('아래 항목을 입력해 주세요.\n- ' + missing.join('\n- '), 'error');
+        return false;
+      }
+      clearNotice();
+      return true;
+    }
+
+    function updateItemTotals() {
+      getItems().forEach((item, index) => {
+        const cell = els.itemBody.querySelectorAll('.item-total')[index];
+        if (cell) cell.textContent = money(item.amount);
+      });
+      const totals = getTotals();
+      els.subtotalText.textContent = money(totals.subtotal);
+      els.taxText.textContent = money(totals.tax);
+      els.totalText.textContent = money(totals.total);
+    }
+
+    function updatePreview() {
+      const clientName = safeText(getField('clientName'), '거래처 이름 미입력');
+      const clientEmail = safeText(getField('clientEmail'), '이메일 미입력');
+      const quoteTitle = safeText(getField('quoteTitle'), '견적 제목 미입력');
+      const quoteDate = safeText(getField('quoteDate'), today());
+      const senderName = safeText(getField('senderName'), '보내는 사람 미입력');
+      const senderEmail = safeText(getField('senderEmail'), '');
+      const memo = safeText(getField('memo'), '본 견적의 유효기간은 견적일로부터 14일입니다.');
+      const items = getItems();
+      const totals = getTotals();
+
+      const rows = items.map((item, idx) => `
+        <tr>
+          <td class="center">${idx + 1}</td>
+          <td>${safeText(item.name, '품목명 미입력')}</td>
+          <td class="right">${item.qty}</td>
+          <td class="right">${money(item.price)}</td>
+          <td class="right">${money(item.amount)}</td>
+        </tr>
+      `).join('');
+
+      els.previewArea.innerHTML = `
+        <h3>견적서</h3>
+        <table class="meta-table">
+          <tr><th>견적 제목</th><td>${quoteTitle}</td></tr>
+          <tr><th>거래처</th><td>${clientName} / ${clientEmail}</td></tr>
+          <tr><th>견적일</th><td>${quoteDate}</td></tr>
+          <tr><th>보내는 곳</th><td>${senderName}${senderEmail ? ' / ' + senderEmail : ''}</td></tr>
+        </table>
+        <table class="preview-table">
+          <thead>
+            <tr><th>No</th><th>품목</th><th>수량</th><th>단가</th><th>금액</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+          <tfoot>
+            <tr><th colspan="4" class="right">공급가액</th><td class="right">${money(totals.subtotal)}</td></tr>
+            <tr><th colspan="4" class="right">부가세 10%</th><td class="right">${money(totals.tax)}</td></tr>
+            <tr><th colspan="4" class="right">최종 견적 금액</th><td class="right"><b>${money(totals.total)}</b></td></tr>
+          </tfoot>
+        </table>
+        <p><b>안내:</b> ${memo}</p>
+      `;
+
+      els.mailPreview.textContent = makeMailText();
+    }
+
+    function makeMailText() {
+      const clientName = safeText(getField('clientName'), '거래처');
+      const quoteTitle = safeText(getField('quoteTitle'), '견적 건');
+      const senderName = safeText(getField('senderName'), '보내는 사람');
+      const totals = getTotals();
+      return `${clientName} 담당자님, 안녕하세요.\n\n요청 주신 ${quoteTitle} 관련 견적서를 첨부드립니다.\n견적 금액은 부가세 포함 ${money(totals.total)}입니다.\n\n견적서와 관련 첨부 문서를 하나의 PDF로 함께 정리했습니다.\n확인 후 궁금하신 점이 있으시면 편하게 회신 부탁드립니다.\n\n감사합니다.\n${senderName} 드림`;
+    }
+
+    function updateAll() {
+      updateItemTotals();
+      updatePreview();
+    }
+
+    function fillSample() {
+      document.getElementById('clientName').value = '오션스탭 주식회사';
+      document.getElementById('clientEmail').value = 'client@example.com';
+      document.getElementById('quoteTitle').value = 'AI 업무 자동화 도구 제작 견적';
+      document.getElementById('senderName').value = '주영컴퍼니';
+      document.getElementById('senderEmail').value = 'me@example.com';
+      document.getElementById('memo').value = '본 견적의 유효기간은 견적일로부터 14일입니다. 작업 범위 변경 시 금액은 조정될 수 있습니다.';
+      els.itemBody.innerHTML = '';
+      addItemRow({ name: '업무 프로세스 분석', qty: 1, price: 300000 });
+      addItemRow({ name: '견적서 자동 생성 화면 제작', qty: 1, price: 700000 });
+      addItemRow({ name: 'PDF 병합 및 ZIP 다운로드 기능', qty: 1, price: 500000 });
+      updateAll();
+    }
+
+    function handleFiles() {
+      state.files = [...els.fileInput.files];
+      if (state.files.length === 0) {
+        els.fileList.innerHTML = '<li>선택된 첨부 파일이 없습니다.</li>';
+        return;
+      }
+      els.fileList.innerHTML = state.files.map(file => `<li>${file.name} <span class="small">(${Math.round(file.size / 1024).toLocaleString('ko-KR')} KB)</span></li>`).join('');
+    }
+
+    function filenameBase() {
+      const clientName = safeText(getField('clientName'), '거래처').replace(/[\\/:*?"<>|]/g, '_');
+      const quoteTitle = safeText(getField('quoteTitle'), '견적서').replace(/[\\/:*?"<>|]/g, '_');
+      return `${clientName}_${quoteTitle}`;
+    }
+
+    async function createQuotePdfBlob() {
+      /*
+        한글 PDF 깨짐 방지 방식
+        - jsPDF의 기본 폰트는 한글을 제대로 지원하지 않습니다.
+        - 그래서 미리보기 영역을 html2canvas로 이미지화한 뒤 PDF에 넣습니다.
+        - 브라우저 화면에 보이는 한글 그대로 PDF에 들어가기 때문에 별도 서버/폰트 파일 없이 안정적으로 동작합니다.
+      */
+      updateAll();
+
+      const source = els.previewArea;
+      const canvas = await html2canvas(source, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 10;
+      const usableWidth = pageWidth - margin * 2;
+      const imgHeight = canvas.height * usableWidth / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = margin;
+
+      doc.addImage(imgData, 'PNG', margin, position, usableWidth, imgHeight);
+      heightLeft -= pageHeight - margin * 2;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight + margin;
+        doc.addPage();
+        doc.addImage(imgData, 'PNG', margin, position, usableWidth, imgHeight);
+        heightLeft -= pageHeight - margin * 2;
+      }
+
+      return doc.output('blob');
+    }
+
+    async function makeMergedPdfBlob() {
+      const quoteBlob = await createQuotePdfBlob();
+      const quoteBytes = await quoteBlob.arrayBuffer();
+      const mergedPdf = await PDFDocument.create();
+      const quotePdf = await PDFDocument.load(quoteBytes);
+      const quotePages = await mergedPdf.copyPages(quotePdf, quotePdf.getPageIndices());
+      quotePages.forEach(page => mergedPdf.addPage(page));
+
+      for (const file of state.files) {
+        const lower = file.name.toLowerCase();
+        if (lower.endsWith('.pdf')) {
+          try {
+            const pdfBytes = await file.arrayBuffer();
+            const pdf = await PDFDocument.load(pdfBytes);
+            const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+            pages.forEach(page => mergedPdf.addPage(page));
+          } catch (error) {
+            console.warn('PDF 병합 실패:', file.name, error);
+          }
+        } else if (lower.endsWith('.csv')) {
+          const csvText = await file.text();
+          addCsvPageToPdf(mergedPdf, file.name, csvText);
+        }
+      }
+
+      const bytes = await mergedPdf.save();
+      return new Blob([bytes], { type: 'application/pdf' });
+    }
+
+    async function addCsvPageToPdf(pdfDoc, fileName, csvText) {
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      let page = pdfDoc.addPage([595.28, 841.89]);
+      const margin = 42;
+      let y = 790;
+      page.drawText(`CSV Attachment: ${fileName}`, {
+        x: margin,
+        y,
+        size: 15,
+        font,
+        color: rgb(0.1, 0.1, 0.1)
+      });
+      y -= 28;
+
+      const lines = csvText.split(/\r?\n/).slice(0, 80);
+      for (const rawLine of lines) {
+        const line = rawLine.slice(0, 95);
+        if (y < 50) {
+          page = pdfDoc.addPage([595.28, 841.89]);
+          y = 790;
+        }
+        page.drawText(line || ' ', {
+          x: margin,
+          y,
+          size: 9,
+          font,
+          color: rgb(0.2, 0.2, 0.2)
+        });
+        y -= 13;
+      }
+    }
+
+    async function downloadQuotePdf() {
+      if (!validateRequired()) return;
+      const blob = await createQuotePdfBlob();
+      saveAs(blob, `${filenameBase()}_견적서.pdf`);
+      setNotice('견적서 PDF를 만들었습니다.', 'ok');
+    }
+
+    async function downloadMergedPdf() {
+      if (!validateRequired()) return;
+      const blob = await makeMergedPdfBlob();
+      saveAs(blob, `${filenameBase()}_견적서_첨부포함.pdf`);
+      setNotice('견적서와 첨부 문서를 하나의 PDF로 만들었습니다.', 'ok');
+    }
+
+    async function downloadZip() {
+      if (!validateRequired()) return;
+      const zip = new JSZip();
+      const quoteBlob = await createQuotePdfBlob();
+      const mergedBlob = await makeMergedPdfBlob();
+      zip.file(`${filenameBase()}_견적서.pdf`, quoteBlob);
+      zip.file(`${filenameBase()}_견적서_첨부포함.pdf`, mergedBlob);
+      zip.file(`${filenameBase()}_메일문구.txt`, makeMailText());
+
+      for (const file of state.files) {
+        zip.file(`원본첨부/${file.name}`, file);
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      saveAs(zipBlob, `${filenameBase()}_발송패키지.zip`);
+      setNotice('PDF와 메일 문구를 ZIP 파일로 정리했습니다.', 'ok');
+    }
+
+    async function copyMailText() {
+      const text = makeMailText();
+      try {
+        await navigator.clipboard.writeText(text);
+        setNotice('메일 문구를 클립보드에 복사했습니다.', 'ok');
+      } catch (error) {
+        setNotice('자동 복사에 실패했습니다. 오른쪽 메일 문구를 직접 선택해서 복사해 주세요.', 'error');
+      }
+    }
+
+    function init() {
+      document.getElementById('quoteDate').value = today();
+      addItemRow();
+      fields.forEach(id => document.getElementById(id).addEventListener('input', updateAll));
+      els.fileInput.addEventListener('change', handleFiles);
+      handleFiles();
+      updateAll();
+    }
+
+    init();
+  </script>
+</body>
+</html>

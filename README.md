@@ -21,8 +21,17 @@ python3 -m http.server 8080
 - **Home / End** — 처음 / 마지막
 - **F** — 전체화면
 
+## 도구 (서브페이지)
+
+특강에서 쓴 도구들. GitHub Pages에서 바로 접근됩니다.
+
+- **도구 모음**: [`/tools/`](https://juyeong-byeon.github.io/ocean-ai-talk-slides/tools/)
+- **업무툴 프롬프트 빌더**: [`/tools/prompt-builder.html`](https://juyeong-byeon.github.io/ocean-ai-talk-slides/tools/prompt-builder.html)
+- **견적서 작성 프로그램**: [`/tools/quote-builder.html`](https://juyeong-byeon.github.io/ocean-ai-talk-slides/tools/quote-builder.html)
+
 ## 구성
 
-- `오션스탭_발표슬라이드.html` — 슬라이드 본문
+- `오션스탭_발표슬라이드.html` — 슬라이드 본문 (결과물 슬라이드에서 `tools/quote-builder.html` 을 임베드)
 - `three.min.js` — Three.js r128 (오프닝·소개 슬라이드의 파티클 링 3D 효과, 오프라인 대응용 로컬 번들)
+- `tools/` — 특강 도구 모음 (`index.html` 허브 + 각 도구 HTML)
 - `index.html` — 슬라이드로의 리다이렉트 (GitHub Pages 루트용)

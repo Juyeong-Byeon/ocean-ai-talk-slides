@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>업무툴 프롬프트 빌더</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --line: #e5e7eb;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --soft: #eff6ff;
+      --danger: #dc2626;
+      --radius: 18px;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .page {
+      width: min(1160px, 100%);
+      margin: 0 auto;
+      padding: 36px 20px 48px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 20px;
+      align-items: stretch;
+      margin-bottom: 20px;
+    }
+
+    .hero-card, .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card { padding: 28px; }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 4vw, 42px);
+      letter-spacing: -0.04em;
+      line-height: 1.15;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .mini-guide {
+      padding: 24px;
+      background: #0f172a;
+      color: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .mini-guide h2 {
+      margin: 0 0 14px;
+      font-size: 20px;
+    }
+
+    .mini-guide ol {
+      margin: 0;
+      padding-left: 20px;
+      color: #dbeafe;
+    }
+
+    .mini-guide li + li { margin-top: 8px; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel { padding: 22px; }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1d4ed8;
+      background: var(--soft);
+      white-space: nowrap;
+    }
+
+    .field { margin-bottom: 18px; }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .hint {
+      margin: -2px 0 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid #d0d5dd;
+      border-radius: 14px;
+      padding: 13px 14px;
+      font: inherit;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border 0.15s, box-shadow 0.15s;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: #1e40af;
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 13px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .chip:hover { background: #dbeafe; }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      position: sticky;
+      bottom: 0;
+      padding-top: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0), #fff 22%);
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 16px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.15s;
+    }
+
+    button:active { transform: translateY(1px); }
+
+    .primary { background: var(--primary); color: white; }
+    .primary:hover { background: var(--primary-dark); }
+    .secondary { background: #eef2ff; color: #3730a3; }
+    .ghost { background: #f3f4f6; color: #374151; }
+
+    .output {
+      width: 100%;
+      min-height: 560px;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      background: #0b1220;
+      color: #e5e7eb;
+      border-radius: 16px;
+      border: 1px solid #1f2937;
+      padding: 16px;
+      overflow: auto;
+    }
+
+    .notice {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #fffbeb;
+      color: #92400e;
+      font-size: 14px;
+      border: 1px solid #fde68a;
+    }
+
+    .error {
+      display: none;
+      margin-top: 10px;
+      color: var(--danger);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .page { padding: 22px 14px 32px; }
+      .hero, .layout { grid-template-columns: 1fr; }
+      .hero-card, .panel, .mini-guide { padding: 18px; }
+      .row { grid-template-columns: 1fr; }
+      .section-title { align-items: flex-start; flex-direction: column; }
+      .actions { position: static; }
+      button { width: 100%; }
+      .output { min-height: 420px; font-size: 12px; }
+    }
+
+    @media (max-width: 420px) {
+      .page { padding-left: 10px; padding-right: 10px; }
+      input, textarea, select { font-size: 16px; }
+      h1 { font-size: 27px; }
+      .lead { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-card">
+        <h1>내 업무를<br />HTML 업무툴로 바꾸는 프롬프트 빌더</h1>
+        <p class="lead">반복 업무를 몇 가지 질문에 맞춰 적으면, AI에게 바로 요청할 수 있는 “다운로드 가능한 HTML 파일 제작 프롬프트”를 만들어줍니다.</p>
+      </div>
+      <div class="mini-guide">
+        <h2>작성 방법</h2>
+        <ol>
+          <li>업무 이름과 현재 하는 방식을 적습니다.</li>
+          <li>툴에서 입력받을 정보와 만들어질 결과를 적습니다.</li>
+          <li>프롬프트를 복사해 ChatGPT에 붙여넣습니다.</li>
+          <li>생성된 HTML 파일을 다운로드해 브라우저에서 실행합니다.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="panel">
+        <div class="section-title">
+          <h2>업무 설명 입력</h2>
+          <span class="badge">쉽게 쓰되 구체적으로</span>
+        </div>
+
+        <div class="field">
+          <label for="toolTitle">1. 만들고 싶은 업무툴 이름</label>
+          <p class="hint">이 이름이 HTML 파일명으로 사용됩니다.</p>
+          <input id="toolTitle" placeholder="예: 견적서와 첨부문서를 한 번에 준비하기" />
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="userType">2. 누가 쓰나요?</label>
+            <input id="userType" placeholder="예: 대표, 영업 담당자, 운영 담당자" />
+          </div>
+          <div class="field">
+            <label for="deviceType">3. 주로 어디서 쓰나요?</label>
+            <select id="deviceType">
+              <option value="PC와 모바일 모두">PC와 모바일 모두</option>
+              <option value="PC 중심">PC 중심</option>
+              <option value="모바일 중심">모바일 중심</option>
+              <option value="태블릿 포함">태블릿 포함</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="currentProcess">4. 현재 업무 단계를 순서대로 적어주세요</label>
+          <p class="hint">대표님이 실제로 하는 순서 그대로 적어주세요. “1. 메일 확인 → 2. 엑셀 수정 → 3. PDF 저장”처럼 단계가 보이면 결과물이 덜 흔들립니다.</p>
+          <textarea id="currentProcess" placeholder="예:&#10;1. 거래처 메일을 확인한다.&#10;2. 기존 엑셀 견적서를 복사한다.&#10;3. 업체명, 품목, 수량, 단가를 수정한다.&#10;4. PDF로 저장한다.&#10;5. 회사소개서와 사업자등록증을 찾아 메일에 첨부한다."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="painPoint">5. 이 업무에서 가장 귀찮거나 실수 나는 부분은?</label>
+          <textarea id="painPoint" placeholder="예: 금액 계산을 다시 확인해야 하고, 첨부할 파일명이 헷갈려서 매번 열어봐야 한다."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="inputInfo">6. 툴에서 사용자가 입력하거나 올려야 하는 정보는?</label>
+          <p class="hint">개발 용어 없이 “어떤 정보를 넣어야 하는지”만 적어도 됩니다.</p>
+          <textarea id="inputInfo" placeholder="예:&#10;- 거래처명&#10;- 담당자명&#10;- 품목명&#10;- 수량&#10;- 단가&#10;- 첨부할 회사소개서 파일&#10;- 첨부할 사업자등록증 파일"></textarea>
+          <div class="chips" aria-label="입력 예시">
+            <span class="chip" data-target="inputInfo" data-text="- 업체명\n- 담당자명\n- 날짜">업체/담당자/날짜</span>
+            <span class="chip" data-target="inputInfo" data-text="- 품목명\n- 수량\n- 단가">품목/수량/단가</span>
+            <span class="chip" data-target="inputInfo" data-text="- 엑셀 또는 CSV 파일\n- PDF 파일\n- 이미지 파일">파일 업로드</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="resultOutput">7. 버튼을 누르면 무엇이 만들어지면 좋나요?</label>
+          <textarea id="resultOutput" placeholder="예:&#10;- 견적서 미리보기&#10;- 공급가액, 부가세, 총액 계산 결과&#10;- 견적서 PDF 다운로드&#10;- 첨부문서와 견적서를 묶은 파일&#10;- 메일에 붙여넣을 안내 문구"></textarea>
+          <div class="chips" aria-label="결과 예시">
+            <span class="chip" data-target="resultOutput" data-text="- 정리된 표 보여주기\n- CSV 파일 다운로드">표/CSV</span>
+            <span class="chip" data-target="resultOutput" data-text="- PDF 파일 다운로드\n- 여러 파일을 하나로 묶기">PDF/파일 묶기</span>
+            <span class="chip" data-target="resultOutput" data-text="- 복사 가능한 메일 문구\n- 체크리스트">메일/체크리스트</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="mustHave">8. 꼭 지켜줬으면 하는 점</label>
+          <p class="hint">디자인, 모바일, 한글, 파일명, 계산 방식 등 원하는 점을 적어주세요.</p>
+          <textarea id="mustHave" placeholder="예:&#10;- 모바일에서도 입력하기 편해야 한다.&#10;- 한글이 깨지면 안 된다.&#10;- 금액은 원화 형식으로 보여줘야 한다.&#10;- 비개발자도 쉽게 쓸 수 있어야 한다."></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="primary" id="generateBtn">프롬프트 만들기</button>
+          <button class="secondary" id="sampleBtn" type="button">견적서 예시 채우기</button>
+          <button class="ghost" id="clearBtn" type="button">초기화</button>
+        </div>
+        <div class="error" id="errorText">업무툴 이름과 현재 업무 방식을 먼저 입력해주세요.</div>
+      </div>
+
+      <div class="panel">
+        <div class="section-title">
+          <h2>생성된 프롬프트</h2>
+          <span class="badge">복사해서 AI에 붙여넣기</span>
+        </div>
+        <pre class="output" id="output">왼쪽 내용을 입력한 뒤 “프롬프트 만들기”를 눌러주세요.</pre>
+        <div class="actions">
+          <button class="primary" id="copyBtn" type="button">프롬프트 복사</button>
+          <button class="secondary" id="downloadBtn" type="button">TXT 다운로드</button>
+        </div>
+        <div class="notice">
+          생성된 프롬프트는 ChatGPT, Claude, Gemini 등에 붙여넣어 사용할 수 있습니다. 결과는 코드 설명이 아니라 다운로드 가능한 HTML 파일 하나로 요청하도록 구성되어 있습니다.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function sanitizeFileName(name) {
+      return (name || '업무툴')
+        .trim()
+        .replace(/[\\/:*?"<>|]/g, '')
+        .replace(/\s+/g, '_')
+        .slice(0, 60) || '업무툴';
+    }
+
+    function value(id) {
+      return $(id).value.trim();
+    }
+
+    function buildPrompt() {
+      const title = value('toolTitle');
+      const currentProcess = value('currentProcess');
+      if (!title || !currentProcess) {
+        $('errorText').style.display = 'block';
+        return '';
+      }
+      $('errorText').style.display = 'none';
+
+      const fileName = sanitizeFileName(title) + '.html';
+      const userType = value('userType') || '비개발자 실무자';
+      const deviceType = value('deviceType') || 'PC와 모바일 모두';
+      const painPoint = value('painPoint') || '반복 작업을 줄이고 실수를 줄이고 싶습니다.';
+      const inputInfo = value('inputInfo') || '현재 업무 프로세스를 보고 필요한 입력 항목을 적절히 구성해주세요.';
+      const resultOutput = value('resultOutput') || '업무 결과를 화면에서 확인하고 필요한 파일을 다운로드할 수 있게 해주세요.';
+      const mustHave = value('mustHave') || '비개발자도 쉽게 사용할 수 있게 만들어주세요.';
+
+      return `너는 비개발자도 사용할 수 있는 간단한 업무툴을 만드는 프론트엔드 개발자야.
+
+아래 업무 내용을 바탕으로 HTML + CSS + JavaScript만 사용하는 간단한 업무툴을 만들어줘.
+
+# 만들고 싶은 도구
+${title}
+
+# 사용하는 사람
+${userType}
+
+# 주로 사용할 환경
+${deviceType}
+
+# 현재 업무 단계
+${currentProcess}
+
+# 가장 귀찮거나 실수 나는 부분
+${painPoint}
+
+# 사용자가 입력하거나 올려야 하는 정보
+${inputInfo}
+
+# 버튼을 눌렀을 때 만들어져야 하는 결과
+${resultOutput}
+
+# 꼭 되었으면 하는 것
+${mustHave}
+
+# 구현 요청
+- 결과는 코드 블록 설명이 아니라 다운로드 가능한 HTML 파일 하나로 제공해줘.
+- 파일명은 "${fileName}" 으로 만들어줘.
+- CSS와 JavaScript는 모두 같은 HTML 파일 안에 포함해줘.
+- 서버나 백엔드 없이 브라우저에서 실행되게 만들어줘.
+- 필요한 외부 라이브러리가 있다면 CDN으로 불러와도 돼.
+- 처음부터 너무 복잡하게 만들지 말고, 실제로 작동하는 MVP를 만들어줘.
+
+# 한국어 지원
+- 모든 UI, 버튼, 안내 문구, 오류 메시지는 자연스러운 한국어로 작성해줘.
+- UTF-8을 사용해서 한글 입력과 출력이 깨지지 않게 해줘.
+- 다운로드 파일명에도 한글이 자연스럽게 들어가도록 처리해줘.
+- PDF나 파일 다운로드 기능이 있다면 한글이 깨지지 않도록 신경 써줘.
+- 날짜, 숫자, 금액은 한국에서 익숙한 형식으로 보여줘. 예: 2026. 7. 9., 1,000,000원
+
+# 모바일 대응
+- PC뿐 아니라 모바일에서도 보기 좋게 반응형으로 만들어줘.
+- 스마트폰 화면에서는 입력창과 버튼이 너무 작지 않게 해줘.
+- 모바일에서 가로 스크롤이 생기지 않게 해줘.
+- 버튼은 손가락으로 누르기 쉽게 충분한 크기와 간격을 줘.
+- 긴 표나 미리보기 영역이 있다면 모바일에서도 읽기 쉽게 처리해줘.
+
+# 디자인
+- 비개발자가 실제 업무에서 쓸 수 있을 정도로 깔끔하게 만들어줘.
+- 입력 → 확인 → 다운로드 또는 복사 흐름이 직관적으로 보이게 구성해줘.
+- 중요한 결과값은 눈에 잘 띄게 표시해줘.
+- 오류가 생길 수 있는 경우에는 사용자가 이해하기 쉬운 안내 문구를 보여줘.`;
+    }
+
+    function generate() {
+      const prompt = buildPrompt();
+      if (prompt) $('output').textContent = prompt;
+    }
+
+    function fillSample() {
+      $('toolTitle').value = '견적서와 첨부문서를 한 번에 준비하기';
+      $('userType').value = '수산물 B2B 스타트업 대표 또는 영업 담당자';
+      $('deviceType').value = 'PC와 모바일 모두';
+      $('currentProcess').value = `1. 거래처에서 견적 요청 메일을 받는다.\n2. 기존 엑셀 견적서를 복사한다.\n3. 업체명, 담당자명, 품목, 수량, 단가를 수정한다.\n4. 공급가액, 부가세, 총액이 맞는지 다시 확인한다.\n5. PDF로 저장한다.\n6. 회사소개서와 사업자등록증 파일을 찾아 메일에 첨부한다.\n7. 메일 제목과 본문을 작성해서 발송한다.`;
+      $('painPoint').value = '금액 계산을 다시 확인하는 시간이 걸리고, 회사소개서와 사업자등록증 파일명이 헷갈려서 매번 열어봐야 한다. PDF 저장 후 파일명을 다시 바꾸는 것도 번거롭다.';
+      $('inputInfo').value = `- 거래처명\n- 담당자명\n- 견적일\n- 품목명\n- 수량\n- 단가\n- 부가세 포함 여부\n- 회사소개서 파일\n- 사업자등록증 파일`;
+      $('resultOutput').value = `- 견적서 미리보기\n- 공급가액, 부가세, 총액 자동 계산\n- 견적서 PDF 다운로드\n- 첨부해야 할 문서 체크리스트\n- 메일에 붙여넣을 제목과 본문 문구\n- 견적서와 첨부문서를 한 번에 묶은 파일명 안내`;
+      $('mustHave').value = `- 한글이 깨지지 않아야 한다.\n- 모바일에서도 입력하기 편해야 한다.\n- 금액은 원화 형식으로 보여줘야 한다.\n- 파일명은 거래처명과 날짜가 들어가면 좋겠다.\n- 비개발자도 바로 이해할 수 있게 화면이 단순해야 한다.`;
+      generate();
+    }
+
+    async function copyPrompt() {
+      const text = $('output').textContent;
+      if (!text || text.startsWith('왼쪽 내용을')) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        const btn = $('copyBtn');
+        const original = btn.textContent;
+        btn.textContent = '복사 완료';
+        setTimeout(() => btn.textContent = original, 1200);
+      } catch (e) {
+        alert('복사에 실패했습니다. 프롬프트 영역을 직접 선택해 복사해주세요.');
+      }
+    }
+
+    function downloadTxt() {
+      const text = $('output').textContent;
+      if (!text || text.startsWith('왼쪽 내용을')) return;
+      const fileName = sanitizeFileName(value('toolTitle') || '업무툴_프롬프트') + '_프롬프트.txt';
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function clearForm() {
+      ['toolTitle','userType','currentProcess','painPoint','inputInfo','resultOutput','mustHave'].forEach(id => $(id).value = '');
+      $('deviceType').value = 'PC와 모바일 모두';
+      $('output').textContent = '왼쪽 내용을 입력한 뒤 “프롬프트 만들기”를 눌러주세요.';
+      $('errorText').style.display = 'none';
+    }
+
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const target = $(chip.dataset.target);
+        const addition = chip.dataset.text.replace(/\\n/g, '\n');
+        target.value = target.value.trim() ? target.value.trim() + '\n' + addition : addition;
+        target.focus();
+      });
+    });
+
+    $('generateBtn').addEventListener('click', generate);
+    $('sampleBtn').addEventListener('click', fillSample);
+    $('clearBtn').addEventListener('click', clearForm);
+    $('copyBtn').addEventListener('click', copyPrompt);
+    $('downloadBtn').addEventListener('click', downloadTxt);
+  </script>
+</body>
+</html>
