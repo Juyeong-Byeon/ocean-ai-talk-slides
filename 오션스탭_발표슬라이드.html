@@ -436,9 +436,54 @@
 
   <section class="slide">
     <div class="kicker rev">이 회사만이 아니에요 — 광고 대행사도</div>
-    <div class="lead wide rev">매주 네이버 검색·쇼핑·GFA 광고 데이터를 <b>따로따로 뽑아 엑셀로 합치고</b>, 리포트를 <b>수기로</b> 만들고 있었어요.</div>
-    <div class="lead wide rev" style="margin-top:12px;">→ 데이터를 한곳에 모으고, <b>"지난주 어느 캠페인이 제일 효율 좋았어?"</b>라고 물으면 AI가 답하고 <span class="grad">반복 리포트를 자동 생성.</span></div>
-    <div class="lead wide rev muted" style="margin-top:12px; font-size:clamp(14px,1.7vw,18px);">업은 달라도 병목은 똑같아요 — 흩어진 데이터 + 반복 작업.</div>
+    <div class="rev" style="margin-top:4px;">
+    <svg viewBox="0 0 1200 520" style="width:100%;height:auto;max-width:1020px;" xmlns="http://www.w3.org/2000/svg">
+      <text x="20" y="34" fill="#f0a742" font-size="15" font-weight="800">Before · 매주 이걸 수동으로</text>
+      <g text-anchor="middle" font-weight="700">
+        <rect x="20" y="52" width="170" height="54" rx="10" fill="rgba(240,167,66,0.10)" stroke="#f0a742" stroke-width="1.5"/><text x="105" y="84" font-size="14" fill="#f3d9b4">네이버 검색광고</text>
+        <rect x="210" y="52" width="170" height="54" rx="10" fill="rgba(240,167,66,0.10)" stroke="#f0a742" stroke-width="1.5"/><text x="295" y="84" font-size="14" fill="#f3d9b4">네이버 쇼핑</text>
+        <rect x="400" y="52" width="170" height="54" rx="10" fill="rgba(240,167,66,0.10)" stroke="#f0a742" stroke-width="1.5"/><text x="485" y="84" font-size="14" fill="#f3d9b4">GFA</text>
+      </g>
+      <text x="595" y="84" fill="#8a7048" font-size="13" font-weight="700">← 데이터가 3곳에 흩어짐</text>
+      <g stroke="#8a7048" stroke-dasharray="4 5" stroke-width="1.5">
+        <line x1="105" y1="106" x2="105" y2="150"/><line x1="295" y1="106" x2="295" y2="150"/><line x1="485" y1="106" x2="485" y2="150"/>
+      </g>
+      <g text-anchor="middle">
+        <rect x="20" y="150" width="230" height="70" rx="12" fill="rgba(240,167,66,0.09)" stroke="#f0a742" stroke-width="1.5"/>
+        <text x="135" y="180" font-size="14" font-weight="700" fill="#f3d9b4">채널별로 따로 추출</text><text x="135" y="202" font-size="11" font-weight="800" fill="#f0a742">수동</text>
+        <rect x="290" y="150" width="230" height="70" rx="12" fill="rgba(240,167,66,0.09)" stroke="#f0a742" stroke-width="1.5"/>
+        <text x="405" y="180" font-size="14" font-weight="700" fill="#f3d9b4">엑셀로 취합</text><text x="405" y="202" font-size="11" font-weight="800" fill="#f0a742">수동</text>
+        <rect x="560" y="150" width="230" height="70" rx="12" fill="rgba(240,167,66,0.09)" stroke="#f0a742" stroke-width="1.5"/>
+        <text x="675" y="180" font-size="14" font-weight="700" fill="#f3d9b4">리포트 수기 작성</text><text x="675" y="202" font-size="11" font-weight="800" fill="#f0a742">수동</text>
+      </g>
+      <g fill="#7a869a" stroke="#7a869a" stroke-width="2">
+        <line x1="253" y1="185" x2="278" y2="185"/><polygon points="278,179 278,191 286,185"/>
+        <line x1="523" y1="185" x2="548" y2="185"/><polygon points="548,179 548,191 556,185"/>
+      </g>
+      <text x="810" y="191" fill="#f0a742" font-size="14" font-weight="800">…를 매주 반복</text>
+      <g fill="#13d6c3" stroke="#13d6c3" stroke-width="2"><line x1="600" y1="240" x2="600" y2="266"/><polygon points="594,266 606,266 600,276" stroke="none"/></g>
+      <text x="622" y="262" fill="#13d6c3" font-size="14" font-weight="800">데이터를 한곳에 모았더니 —</text>
+      <text x="20" y="330" fill="#13d6c3" font-size="15" font-weight="800">After · 자동</text>
+      <g text-anchor="middle">
+        <rect x="20" y="348" width="190" height="84" rx="14" fill="rgba(19,214,195,0.12)" stroke="#13d6c3" stroke-width="1.6"/>
+        <text x="115" y="384" font-size="15" font-weight="800" fill="#eef4f9">모은 데이터</text><text x="115" y="406" font-size="11.5" fill="#a7e8e0">검색·쇼핑·GFA 한곳에</text>
+        <rect x="250" y="348" width="290" height="84" rx="12" fill="rgba(122,162,255,0.10)" stroke="#7aa2ff" stroke-width="1.5"/>
+        <text x="395" y="374" font-size="11" font-weight="800" fill="#7aa2ff">질문 한 마디</text>
+        <text x="395" y="396" font-size="13.5" font-weight="700" fill="#eef4f9">"지난주 어느 캠페인이</text><text x="395" y="415" font-size="13.5" font-weight="700" fill="#eef4f9">제일 효율 좋았어?"</text>
+        <rect x="580" y="348" width="280" height="84" rx="12" fill="rgba(19,214,195,0.10)" stroke="#13d6c3" stroke-width="1.5"/>
+        <text x="720" y="384" font-size="14" font-weight="700" fill="#eef4f9">AI가 답하고</text><text x="720" y="406" font-size="12.5" fill="#a7e8e0">+ 주간 리포트 자동 생성</text>
+        <rect x="900" y="348" width="180" height="84" rx="14" fill="rgba(77,132,255,0.14)" stroke="#4d84ff" stroke-width="1.6"/>
+        <text x="990" y="384" font-size="15" font-weight="800" fill="#eef4f9">사람</text><text x="990" y="406" font-size="12" fill="#b9ccff">해석·결정만</text>
+      </g>
+      <g fill="#7a869a" stroke="#7a869a" stroke-width="2">
+        <line x1="213" y1="390" x2="238" y2="390"/><polygon points="238,384 238,396 246,390"/>
+        <line x1="543" y1="390" x2="568" y2="390"/><polygon points="568,384 568,396 576,390"/>
+        <line x1="863" y1="390" x2="888" y2="390"/><polygon points="888,384 888,396 896,390"/>
+      </g>
+      <text x="20" y="492" fill="#cdd9e6" font-size="16" font-weight="700">뽑고·합치고·쓰는 건 자동 — 사람은 묻고 판단만. 발전사와 똑같은 구조예요.</text>
+    </svg>
+    </div>
+    <div class="lead wide rev muted" style="margin-top:8px; font-size:clamp(14px,1.7vw,18px);">업은 달라도 병목은 똑같아요 — <b>흩어진 데이터 + 반복 작업</b>.</div>
   </section>
 
   <section class="slide">
