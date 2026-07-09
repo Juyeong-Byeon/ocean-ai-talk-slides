@@ -130,6 +130,14 @@
   .ba .baline:last-child{border-bottom:0;} .ba .baline b{font-variant-numeric:tabular-nums;}
   .ba .bacard.before .baline b{color:#f0a59e;} .ba .bacard.after .baline b{color:var(--accent);}
   .baarrow{align-self:center; font-size:34px; color:var(--accent);}
+  /* 데모 — 툴로 가는 큰 CTA 버튼 */
+  .cta{display:inline-flex; align-items:center; gap:16px; margin-top:30px; padding:26px 48px; border-radius:22px;
+    background:linear-gradient(135deg,var(--blue),var(--accent)); color:#04120f; font-weight:900; letter-spacing:-.01em;
+    font-size:clamp(22px,3.2vw,36px); text-decoration:none; box-shadow:0 22px 64px rgba(19,214,195,.38);
+    transition:transform .16s ease, box-shadow .16s ease; pointer-events:auto;}
+  .cta:hover{transform:translateY(-3px); box-shadow:0 30px 84px rgba(19,214,195,.52);}
+  .cta .arw{transition:transform .16s ease;} .cta:hover .arw{transform:translateX(6px);}
+  .cta-url{margin-top:14px; color:var(--muted); font-size:13px; font-variant-numeric:tabular-nums;}
   .fxvortex{position:absolute; top:0; bottom:0; right:0; left:auto; width:58%; z-index:0; pointer-events:none;}
   .fxvortex canvas{display:block; width:100%; height:100%;}
   @media(max-width:820px){ .fxvortex{width:100%; opacity:.5;} }
@@ -655,14 +663,12 @@
     <div class="lead rev" style="margin:20px auto 0;">여러분은 <b>정의</b>만 하세요. <span class="grad">실행은 AI가 지금 바로 해줍니다.</span></div>
   </section>
 
-  <section class="slide">
-    <div class="kicker rev">워크시트가 프롬프트를 만들어 줍니다</div>
-    <div class="card rev" style="max-width:940px; font-size:clamp(15px,2vw,24px); line-height:1.6; font-weight:600; margin-top:6px;">
-      나는 "<span class="grad">[내 업무]</span>" 일을 매번 반복해. 순서는 이래:<br>
-      <span class="grad">1) … 2) … 3) …</span><br>
-      이 중에서 AI로 가장 쉽게 자동화할 것 하나를 골라, <span class="grad">지금 바로 쓸 수 있게 실제로 만들어줘.</span> 그리고 어떻게 쓰는지도.
-    </div>
-    <div class="lead wide rev" style="margin-top:16px;">순서 적고 <b>[프롬프트 복사]</b> → chatgpt.com. <span class="grad">정의만 했는데 AI가 결과물을 만들어줍니다.</span><br>이어서 → <b>"이거 내 상황에 맞게 더 다듬어줘."</b></div>
+  <section class="slide center">
+    <div class="kicker rev">이제 여러분 차례</div>
+    <h1 class="rev" style="max-width:20ch;">내 업무를 <span class="grad">도구로</span> 바꿔봅시다</h1>
+    <a class="cta rev" href="tools/prompt-builder.html" target="_blank" rel="noopener">🛠️ 업무툴 만들러 가기 <span class="arw">→</span></a>
+    <div class="lead rev" style="margin:22px auto 0; max-width:40ch;">반복 업무를 적으면 프롬프트가 나오고, 그대로 ChatGPT에 붙여넣으면 <span class="grad">나만의 도구</span>가 만들어집니다.</div>
+    <div class="cta-url rev">juyeong-byeon.github.io/ocean-ai-talk-slides/tools/</div>
   </section>
 
   <section class="slide center">
