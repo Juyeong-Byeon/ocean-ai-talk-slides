@@ -428,7 +428,7 @@
       </g>
       <rect x="1000" y="118" width="182" height="124" rx="14" fill="rgba(77,132,255,0.14)" stroke="#4d84ff" stroke-width="1.6"/>
       <text x="1091" y="168" text-anchor="middle" font-size="16" font-weight="800" fill="#eef4f9">사람</text><text x="1091" y="192" text-anchor="middle" font-size="12" fill="#b9ccff">예외·최종</text><text x="1091" y="210" text-anchor="middle" font-size="12" fill="#b9ccff">확인만</text>
-      <text x="20" y="322" fill="#cdd9e6" font-size="16" font-weight="700">판단은 사람, 조회·계산·발행·대사는 자동 — 딱 그 3층 모델이에요.</text>
+      <text x="20" y="322" fill="#cdd9e6" font-size="16" font-weight="700">판단은 사람이, 조회·계산·발행·대사는 자동으로 — 역할을 나눈 거예요.</text>
     </svg>
     </div>
     <div class="lead wide rev" style="margin-top:10px;">8단계 중 사람이 꼭 <b>판단</b>할 건 몇 개뿐이에요.</div>
@@ -538,13 +538,6 @@
     </div>
   </section>
 
-  <section class="slide">
-    <div class="kicker rev">AI는 판단이 아니라 반복에 붙는다</div>
-    <div class="layer human rev"><div class="ln">1</div><div><div class="lt">무엇이 문제인가</div><div class="ld">우리 현장의 뭐가 비효율인가</div></div><div class="who">사람만</div></div>
-    <div class="layer rev"><div class="ln" style="background:linear-gradient(135deg,#6ea0ff,#13d6c3);color:#03110f">2</div><div><div class="lt">어떻게 다시 짤까</div><div class="ld">그 일을 새로 설계</div></div><div class="who" style="color:#bcd">사람 + AI</div></div>
-    <div class="layer airow rev"><div class="ln">3</div><div><div class="lt">반복 실행</div><div class="ld">다시 짠 일을 실제로 돌림</div></div><div class="who">AI</div></div>
-  </section>
-
   <section class="slide center">
     <div class="kicker rev">그래서</div>
     <h2 class="rev" style="max-width:24ch;">모델은 누구나 싸게 씁니다.<br>희소한 건 <span class="grad">'뭐가 비효율인지 아는 사람'</span></h2>
@@ -594,7 +587,7 @@
 
   <section class="slide">
     <div class="kicker rev">기존 흐름 · 이 메일 한 통을 처리하는 법</div>
-    <h2 class="rev" style="max-width:28ch;">견적서 하나 보내는 데 <span class="grad">앱 5개</span>를 오갑니다.</h2>
+    <h2 class="rev" style="max-width:28ch;">견적서 하나 보내는 데 <span class="grad">앱 6개</span>를 오갑니다.</h2>
     <div class="flow rev">
       <div class="fstep">
         <span class="fnum">1</span>
@@ -627,26 +620,34 @@
         <div class="fd">사업자등록증·회사소개서·제품소개서, 폴더 여기저기 뒤짐</div>
         <div class="ftime">≈ 4분</div>
       </div>
-      <div class="farrow">→<small>첨부</small></div>
+      <div class="farrow">→<small>업로드</small></div>
       <div class="fstep">
         <span class="fnum">5</span>
+        <span class="ic">🧩</span><span class="app">PDF 합치기 사이트</span>
+        <div class="ft">한 PDF로 합치기</div>
+        <div class="fd">견적서 + 서류 3종 업로드, 순서 맞춰 병합 후 다운로드</div>
+        <div class="ftime">≈ 3분</div>
+      </div>
+      <div class="farrow">→<small>첨부</small></div>
+      <div class="fstep">
+        <span class="fnum">6</span>
         <span class="ic">✉️</span><span class="app">이메일</span>
         <div class="ft">회신·발송</div>
-        <div class="fd">본문 쓰고 PDF + 첨부 3개 붙여 발송</div>
+        <div class="fd">본문 쓰고 합친 PDF 붙여 발송</div>
         <div class="ftime">≈ 3분</div>
       </div>
     </div>
-    <div class="lead wide rev" style="margin-top:22px; font-size:clamp(14px,1.6vw,18px);">한 건 <b style="color:#cfe">≈ 20분</b> · 앱 전환 <b style="color:#cfe">5회</b> · 파일명 헷갈려 재확인 <b style="color:#cfe">3회</b> — 그걸 하루에 몇 번씩.</div>
+    <div class="lead wide rev" style="margin-top:22px; font-size:clamp(14px,1.6vw,18px);">한 건 <b style="color:#cfe">≈ 23분</b> · 앱 전환 <b style="color:#cfe">6회</b> · 파일명 헷갈려 재확인 <b style="color:#cfe">3회</b> — 그걸 하루에 몇 번씩.</div>
   </section>
 
   <section class="slide center">
     <div class="kicker rev">그래서</div>
     <div class="statrow rev" style="justify-content:center;">
-      <div><div class="stat"><span class="grad">20분</span></div><div class="en">건당 소요</div></div>
+      <div><div class="stat"><span class="grad">23분</span></div><div class="en">건당 소요</div></div>
       <div class="arrow">·</div>
-      <div><div class="stat"><span class="grad">5</span></div><div class="en">오가는 앱</div></div>
+      <div><div class="stat"><span class="grad">6</span></div><div class="en">오가는 앱</div></div>
       <div class="arrow">·</div>
-      <div><div class="stat"><span class="grad">100분</span></div><div class="en">하루 5건이면</div></div>
+      <div><div class="stat"><span class="grad">115분</span></div><div class="en">하루 5건이면</div></div>
     </div>
     <h2 class="rev" style="margin-top:30px; max-width:26ch;">"이거… <span class="grad">매번 똑같은데</span>,<br>그냥 자동으로 안 되나?"</h2>
     <div class="lead rev" style="margin:14px auto 0;">김오션은 이 귀찮음을 없애기로 했습니다. →</div>
@@ -656,9 +657,9 @@
     <div class="kicker rev">자동화 · 김오션이 한 일</div>
     <h2 class="rev" style="max-width:24ch;">업무를 <span class="grad">그대로 적었더니</span>,<br>AI가 나만의 도구를 만들어줬습니다.</h2>
     <div class="step rev" style="margin-top:24px;">
-      <div class="s"><b>①</b>업무를 적기</div>
-      <div class="s"><b>②</b>결과 고르기 <span style="color:var(--muted);font-weight:600;">PDF·자동계산·묶기</span></div>
-      <div class="s"><b>③</b>프롬프트 복사 → ChatGPT</div>
+      <div class="s"><b>①</b>업무 순서를 그대로 적기</div>
+      <div class="s"><b>②</b>원하는 결과 적기 <span style="color:var(--muted);font-weight:600;">PDF·자동계산·묶기</span></div>
+      <div class="s"><b>③</b>ChatGPT에 붙여넣기</div>
     </div>
     <div class="lead wide rev" style="margin-top:22px;">코딩 한 줄 없이. 평소 말하듯 <b style="color:#cfe">"견적 요청이 오면 엑셀 복사해서… PDF로… 서류 첨부해서…"</b> 라고 적기만 했습니다.</div>
   </section>
@@ -669,7 +670,7 @@
     <div class="chatmock rev">
       <div class="bub user">
         <div class="who">김오션</div>
-        너는 비개발자도 쓸 수 있는 업무툴을 만드는 개발자야. 아래 업무를 줄이는 HTML 도구를 만들어줘.<br><span class="muted">— 견적서와 서류 3종을 하나의 PDF로 준비하기. 품목·수량·단가를 넣으면 금액이 자동 계산되고… (생성된 프롬프트 붙여넣기)</span>
+        너는 비개발자도 쓸 수 있는 업무툴을 만드는 개발자야. 아래 업무를 줄이는 HTML 도구를 만들어줘.<br><span class="muted">— 견적서와 서류 3종을 하나의 PDF로 준비하기. 품목·수량·단가를 넣으면 금액이 자동 계산되고… (직접 쓴 요청 그대로)</span>
       </div>
       <div class="bub ai">
         <div class="who">ChatGPT</div>
@@ -692,14 +693,15 @@
 
   <section class="slide center">
     <div class="kicker rev">달라진 흐름</div>
-    <h2 class="rev" style="max-width:26ch;">앱 5개를 오가던 일이 <span class="grad">화면 하나</span>로.</h2>
+    <h2 class="rev" style="max-width:26ch;">앱 6개를 오가던 일이 <span class="grad">화면 하나</span>로.</h2>
     <div class="ba rev">
       <div class="bacard before">
         <div class="balabel">Before · 수작업</div>
-        <div class="baline"><span>오가는 앱</span><b>5개</b></div>
-        <div class="baline"><span>건당 시간</span><b>≈ 20분</b></div>
+        <div class="baline"><span>오가는 앱</span><b>6개</b></div>
+        <div class="baline"><span>건당 시간</span><b>≈ 23분</b></div>
         <div class="baline"><span>파일명 재확인</span><b>3회</b></div>
         <div class="baline"><span>금액 계산</span><b>수동</b></div>
+        <div class="baline"><span>서류 병합</span><b>사이트에서 수동</b></div>
       </div>
       <div class="baarrow">→</div>
       <div class="bacard after">
@@ -708,9 +710,10 @@
         <div class="baline"><span>건당 시간</span><b>≈ 3분</b></div>
         <div class="baline"><span>파일명 재확인</span><b>0회 · 자동</b></div>
         <div class="baline"><span>금액 계산</span><b>자동</b></div>
+        <div class="baline"><span>서류 병합</span><b>자동 · 한 PDF</b></div>
       </div>
     </div>
-    <div class="lead rev" style="margin:22px auto 0;">하루 100분이 <b style="color:var(--accent)">15분</b>으로. 나머지는 진짜 일에.</div>
+    <div class="lead rev" style="margin:22px auto 0;">하루 115분이 <b style="color:var(--accent)">15분</b>으로. 나머지는 진짜 일에.</div>
   </section>
 
   <section class="slide center">
