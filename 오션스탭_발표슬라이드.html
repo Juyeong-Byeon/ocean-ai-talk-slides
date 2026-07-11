@@ -141,6 +141,15 @@
   .cta:hover{transform:translateY(-3px); box-shadow:0 30px 84px rgba(19,214,195,.52);}
   .cta .arw{transition:transform .16s ease;} .cta:hover .arw{transform:translateX(6px);}
   .cta-url{margin-top:14px; color:var(--muted); font-size:13px; font-variant-numeric:tabular-nums;}
+  /* 활동 타이머 */
+  .timer{display:inline-flex; align-self:flex-start; align-items:baseline; gap:14px; margin-top:30px; padding:18px 34px; border-radius:20px;
+    background:var(--card); border:1px solid var(--line); backdrop-filter:blur(4px); cursor:pointer; user-select:none; transition:border-color .2s, opacity .2s;}
+  .timer .tval{font-size:clamp(44px,8vw,96px); font-weight:900; font-variant-numeric:tabular-nums; line-height:1; color:#eaf0ff;}
+  .timer .tlbl{font-size:clamp(14px,1.7vw,20px); font-weight:800; color:var(--muted); letter-spacing:.05em;}
+  .timer.warn .tval{color:#febc2e;}
+  .timer.warn{border-color:rgba(254,188,46,.45);}
+  .timer.done .tval{color:#e0736a;} .timer.done{border-color:rgba(224,115,106,.5);}
+  .timer.paused{opacity:.55;}
   /* 데모 — 프롬프트 빌더 직접 사용(임베드 + QR) */
   .toolrow{display:flex; gap:18px; align-items:stretch; width:100%; max-width:1160px; margin:0 auto;}
   .toolrow .browserframe{flex:1; min-width:0; margin:0;}
@@ -765,6 +774,7 @@
   <section class="slide">
     <div class="kicker rev">활동 1 · 3분</div>
     <h1 class="rev">귀찮은 일 <span class="grad">딱 하나</span> 고르기</h1>
+    <div class="timer rev" data-min="3" title="클릭: 일시정지 / 재개"><span class="tval">3:00</span><span class="tlbl">남았어요</span></div>
   </section>
 
   <section class="slide">
@@ -1196,6 +1206,41 @@
   ["coRing","coRingOpen"].forEach(function(id){
     var el=document.getElementById(id);
     if(el) mountRing(el);
+  });
+})();
+</script>
+<script>
+/* ===== 활동 카운트다운 타이머 (해당 슬라이드 활성 시 자동 시작, 나가면 리셋) ===== */
+(function(){
+  [].slice.call(document.querySelectorAll(".timer[data-min]")).forEach(function(t){
+    var total=(parseInt(t.getAttribute("data-min"),10)||3)*60;
+    var val=t.querySelector(".tval"), lbl=t.querySelector(".tlbl"), slide=t.closest(".slide");
+    var remaining=total, state="idle", iv=null; // idle | running | paused | done
+    function fmt(s){ s=Math.max(0,s); var m=Math.floor(s/60), ss=s%60; return m+":"+(ss<10?"0":"")+ss; }
+    function render(){
+      val.textContent=fmt(remaining);
+      t.classList.toggle("warn", state==="running"&&remaining<=30);
+      t.classList.toggle("done", state==="done");
+      t.classList.toggle("paused", state==="paused");
+    }
+    function clear(){ if(iv){clearInterval(iv); iv=null;} }
+    function run(){ if(state==="running")return; state="running"; lbl.textContent="남았어요"; render();
+      iv=setInterval(function(){ remaining--; if(remaining<=0){ remaining=0; clear(); state="done"; lbl.textContent="시간 종료"; } render(); },1000);
+    }
+    function pause(){ clear(); state="paused"; render(); }
+    function reset(){ clear(); remaining=total; state="idle"; lbl.textContent="남았어요"; render(); }
+    t.addEventListener("click", function(e){ e.stopPropagation();
+      if(state==="running") pause();
+      else if(state==="paused") run();
+      else if(state==="done"){ reset(); run(); }
+      else run();
+    });
+    reset();
+    (function tick(){
+      if(slide.classList.contains("active")){ if(state==="idle") run(); }
+      else if(state!=="idle"){ reset(); }
+      setTimeout(tick,300);
+    })();
   });
 })();
 </script>
