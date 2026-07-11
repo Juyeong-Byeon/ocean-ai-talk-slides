@@ -290,18 +290,24 @@
         </div>
 
         <div class="field">
-          <label for="toolTitle">1. 만들고 싶은 업무툴 이름</label>
+          <label for="companyName">1. 어느 회사인가요?</label>
+          <p class="hint">회사명 또는 업종. 이 맥락이 결과물에 반영됩니다. (선택)</p>
+          <input id="companyName" placeholder="예: 오션스탭 / 사무가구 도매" />
+        </div>
+
+        <div class="field">
+          <label for="toolTitle">2. 만들고 싶은 업무툴 이름</label>
           <p class="hint">이 이름이 HTML 파일명으로 사용됩니다.</p>
           <input id="toolTitle" placeholder="예: 견적서와 첨부문서를 한 번에 준비하기" />
         </div>
 
         <div class="row">
           <div class="field">
-            <label for="userType">2. 누가 쓰나요?</label>
+            <label for="userType">3. 누가 쓰나요?</label>
             <input id="userType" placeholder="예: 대표, 영업 담당자, 운영 담당자" />
           </div>
           <div class="field">
-            <label for="deviceType">3. 주로 어디서 쓰나요?</label>
+            <label for="deviceType">4. 주로 어디서 쓰나요?</label>
             <select id="deviceType">
               <option value="PC와 모바일 모두">PC와 모바일 모두</option>
               <option value="PC 중심">PC 중심</option>
@@ -312,18 +318,18 @@
         </div>
 
         <div class="field">
-          <label for="currentProcess">4. 현재 업무 단계를 순서대로 적어주세요</label>
+          <label for="currentProcess">5. 현재 업무 단계를 순서대로 적어주세요</label>
           <p class="hint">대표님이 실제로 하는 순서 그대로 적어주세요. “1. 메일 확인 → 2. 엑셀 수정 → 3. PDF 저장”처럼 단계가 보이면 결과물이 덜 흔들립니다.</p>
           <textarea id="currentProcess" placeholder="예:&#10;1. 거래처 메일을 확인한다.&#10;2. 기존 엑셀 견적서를 복사한다.&#10;3. 업체명, 품목, 수량, 단가를 수정한다.&#10;4. PDF로 저장한다.&#10;5. 회사소개서와 사업자등록증을 찾아 메일에 첨부한다."></textarea>
         </div>
 
         <div class="field">
-          <label for="painPoint">5. 이 업무에서 가장 귀찮거나 실수 나는 부분은?</label>
+          <label for="painPoint">6. 이 업무에서 가장 귀찮거나 실수 나는 부분은?</label>
           <textarea id="painPoint" placeholder="예: 금액 계산을 다시 확인해야 하고, 첨부할 파일명이 헷갈려서 매번 열어봐야 한다."></textarea>
         </div>
 
         <div class="field">
-          <label for="inputInfo">6. 툴에서 사용자가 입력하거나 올려야 하는 정보는?</label>
+          <label for="inputInfo">7. 툴에서 사용자가 입력하거나 올려야 하는 정보는?</label>
           <p class="hint">개발 용어 없이 “어떤 정보를 넣어야 하는지”만 적어도 됩니다.</p>
           <textarea id="inputInfo" placeholder="예:&#10;- 거래처명&#10;- 담당자명&#10;- 품목명&#10;- 수량&#10;- 단가&#10;- 첨부할 회사소개서 파일&#10;- 첨부할 사업자등록증 파일"></textarea>
           <div class="chips" aria-label="입력 예시">
@@ -334,7 +340,7 @@
         </div>
 
         <div class="field">
-          <label for="resultOutput">7. 버튼을 누르면 무엇이 만들어지면 좋나요?</label>
+          <label for="resultOutput">8. 버튼을 누르면 무엇이 만들어지면 좋나요?</label>
           <textarea id="resultOutput" placeholder="예:&#10;- 견적서 미리보기&#10;- 공급가액, 부가세, 총액 계산 결과&#10;- 견적서 PDF 다운로드&#10;- 첨부문서와 견적서를 묶은 파일&#10;- 메일에 붙여넣을 안내 문구"></textarea>
           <div class="chips" aria-label="결과 예시">
             <span class="chip" data-target="resultOutput" data-text="- 정리된 표 보여주기\n- CSV 파일 다운로드">표/CSV</span>
@@ -344,17 +350,18 @@
         </div>
 
         <div class="field">
-          <label for="mustHave">8. 꼭 지켜줬으면 하는 점</label>
+          <label for="mustHave">9. 꼭 지켜줬으면 하는 점</label>
           <p class="hint">디자인, 모바일, 한글, 파일명, 계산 방식 등 원하는 점을 적어주세요.</p>
           <textarea id="mustHave" placeholder="예:&#10;- 모바일에서도 입력하기 편해야 한다.&#10;- 한글이 깨지면 안 된다.&#10;- 금액은 원화 형식으로 보여줘야 한다.&#10;- 비개발자도 쉽게 쓸 수 있어야 한다."></textarea>
         </div>
 
         <div class="actions">
-          <button class="primary" id="generateBtn">프롬프트 만들기</button>
+          <button class="primary" id="generateBtn">프롬프트 만들기 + 발표자에게 전송하기</button>
           <button class="secondary" id="sampleBtn" type="button">견적서 예시 채우기</button>
           <button class="ghost" id="clearBtn" type="button">초기화</button>
         </div>
         <div class="error" id="errorText">업무툴 이름과 현재 업무 방식을 먼저 입력해주세요.</div>
+        <div id="sendNote" style="margin-top:10px; font-size:13px; color:var(--muted); transition:opacity .2s;">입력 내용과 생성된 프롬프트가 발표자와 공유됩니다.</div>
       </div>
 
       <div class="panel">
@@ -399,6 +406,7 @@
       $('errorText').style.display = 'none';
 
       const fileName = sanitizeFileName(title) + '.html';
+      const company = value('companyName');
       const userType = value('userType') || '비개발자 실무자';
       const deviceType = value('deviceType') || 'PC와 모바일 모두';
       const painPoint = value('painPoint') || '반복 작업을 줄이고 실수를 줄이고 싶습니다.';
@@ -410,7 +418,7 @@
 
 아래 업무 내용을 바탕으로 HTML + CSS + JavaScript만 사용하는 간단한 업무툴을 만들어줘.
 
-# 만들고 싶은 도구
+${company ? `# 회사 / 업종\n${company}\n\n` : ''}# 만들고 싶은 도구
 ${title}
 
 # 사용하는 사람
@@ -463,9 +471,65 @@ ${mustHave}
 - 오류가 생길 수 있는 경우에는 사용자가 이해하기 쉬운 안내 문구를 보여줘.`;
     }
 
+    // ===== 발표자에게 전송 (구글 폼 연동) =====
+    // 폼을 만든 뒤 아래 actionUrl 과 entries 값을 채우면 자동 전송됩니다.
+    // 비워두면 전송은 건너뛰고 프롬프트 생성만 됩니다.
+    const PRESENTER_FORM = {
+      actionUrl: '',
+      entries: {
+        companyName: '', toolTitle: '', userType: '', deviceType: '',
+        currentProcess: '', painPoint: '', inputInfo: '', resultOutput: '',
+        mustHave: '', generatedPrompt: ''
+      }
+    };
+
+    const SEND_NOTE_DEFAULT = '입력 내용과 생성된 프롬프트가 발표자와 공유됩니다.';
+
+    function presenterConfigured() {
+      return !!(PRESENTER_FORM.actionUrl && PRESENTER_FORM.entries.companyName);
+    }
+
+    function flashSent(ok) {
+      const note = $('sendNote');
+      if (!note) return;
+      note.textContent = ok ? '발표자에게 전달됨 ✓' : '전송 실패 — 네트워크를 확인해주세요';
+      note.style.color = ok ? '#15803d' : '#dc2626';
+      note.style.opacity = '1';
+      setTimeout(() => {
+        note.textContent = SEND_NOTE_DEFAULT;
+        note.style.color = 'var(--muted)';
+      }, 2500);
+    }
+
+    function sendToPresenter(promptText) {
+      if (!presenterConfigured()) return;
+      const map = {
+        companyName: value('companyName'),
+        toolTitle: value('toolTitle'),
+        userType: value('userType'),
+        deviceType: value('deviceType'),
+        currentProcess: value('currentProcess'),
+        painPoint: value('painPoint'),
+        inputInfo: value('inputInfo'),
+        resultOutput: value('resultOutput'),
+        mustHave: value('mustHave'),
+        generatedPrompt: promptText
+      };
+      const body = new URLSearchParams();
+      Object.keys(map).forEach((k) => {
+        const entry = PRESENTER_FORM.entries[k];
+        if (entry) body.append(entry, map[k]);
+      });
+      fetch(PRESENTER_FORM.actionUrl, { method: 'POST', mode: 'no-cors', body })
+        .then(() => flashSent(true))
+        .catch(() => flashSent(false));
+    }
+
     function generate() {
       const prompt = buildPrompt();
-      if (prompt) $('output').textContent = prompt;
+      if (!prompt) return;
+      $('output').textContent = prompt;
+      sendToPresenter(prompt);
     }
 
     function fillSample() {
