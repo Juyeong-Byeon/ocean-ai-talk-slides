@@ -150,6 +150,10 @@
   .timer.warn{border-color:rgba(254,188,46,.45);}
   .timer.done .tval{color:#e0736a;} .timer.done{border-color:rgba(224,115,106,.5);}
   .timer.paused{opacity:.55;}
+  .timer.mini{margin-top:0; gap:9px; padding:9px 16px; border-radius:13px;}
+  .timer.mini .tval{font-size:clamp(20px,2.4vw,30px);}
+  .timer.mini .tlbl{font-size:clamp(10px,1.1vw,13px);}
+  .timer.corner{position:absolute; top:3vh; right:9vw; z-index:5;}
   /* 데모 — 프롬프트 빌더 직접 사용(임베드 + QR) */
   .toolrow{display:flex; gap:18px; align-items:stretch; width:100%; max-width:1160px; margin:0 auto;}
   .toolrow .browserframe{flex:1; min-width:0; margin:0;}
@@ -789,6 +793,12 @@
     <div class="timer rev" data-min="3" title="클릭: 일시정지 / 재개"><span class="tval">3:00</span><span class="tlbl">남았어요</span></div>
   </section>
 
+  <section class="slide center">
+    <div class="kicker rev">잠깐 · 용어 하나</div>
+    <h1 class="rev">프롬프트 = <span class="grad">AI한테 시킬 일 적기</span></h1>
+    <div class="lead rev" style="margin:18px auto 0; max-width:32ch;">거창한 거 아니에요. <b style="color:#cfe">"이런 걸 해줘"</b>라고 말로 적는 것. 그게 전부입니다.</div>
+  </section>
+
   <section class="slide">
     <div class="kicker rev">근데 막상 해보면</div>
     <h2 class="rev" style="max-width:27ch;">원래는 <span class="grad">단계를 직접 적고</span> 프롬프트까지 써야 하죠.<br>근데 보통 <span class="grad">'뭘 적지…'</span>에서 막혀요.</h2>
@@ -796,6 +806,7 @@
   </section>
 
   <section class="slide center" style="padding:4vh 4vw;">
+    <div class="timer mini corner rev" data-min="10" title="클릭: 일시정지 / 재개"><span class="tval">10:00</span><span class="tlbl">남았어요</span></div>
     <div class="kicker rev">직접 해보세요 · 폰 꺼내세요 (10분)</div>
     <h3 class="rev" style="margin-bottom:12px;">질문에 답만 하면 — <span class="grad">붙여넣을 프롬프트</span>가 나옵니다.</h3>
     <div class="toolrow rev">
