@@ -142,7 +142,7 @@
   .cta .arw{transition:transform .16s ease;} .cta:hover .arw{transform:translateX(6px);}
   .cta-url{margin-top:14px; color:var(--muted); font-size:13px; font-variant-numeric:tabular-nums;}
   /* 활동 타이머 */
-  .timer{display:inline-flex; align-self:flex-start; align-items:baseline; gap:14px; margin-top:30px; padding:18px 34px; border-radius:20px;
+  .timer{display:inline-flex; align-items:baseline; gap:14px; margin-top:30px; padding:18px 34px; border-radius:20px;
     background:var(--card); border:1px solid var(--line); backdrop-filter:blur(4px); cursor:pointer; user-select:none; transition:border-color .2s, opacity .2s;}
   .timer .tval{font-size:clamp(44px,8vw,96px); font-weight:900; font-variant-numeric:tabular-nums; line-height:1; color:#eaf0ff;}
   .timer .tlbl{font-size:clamp(14px,1.7vw,20px); font-weight:800; color:var(--muted); letter-spacing:.05em;}
@@ -774,7 +774,6 @@
   <section class="slide">
     <div class="kicker rev">활동 1 · 3분</div>
     <h1 class="rev">귀찮은 일 <span class="grad">딱 하나</span> 고르기</h1>
-    <div class="timer rev" data-min="3" title="클릭: 일시정지 / 재개"><span class="tval">3:00</span><span class="tlbl">남았어요</span></div>
   </section>
 
   <section class="slide">
@@ -782,6 +781,12 @@
     <h2 class="rev" style="max-width:24ch;">메일 보내기처럼 <span class="grad">매번 손 많이 가는 간단한 일</span> 하나를 고르세요.</h2>
     <div class="lead wide rev" style="margin-top:20px;">"발주서 열고 → 지난주 수량 확인하고 → 메일 새로 쓰고 → 첨부…" 같은 일이면 됩니다.</div>
     <div class="lead wide rev muted" style="margin-top:12px;font-size:15px;">순서까지 미리 적을 필요 없어요 — 곧 툴이 질문으로 물어봐 줍니다.</div>
+  </section>
+
+  <section class="slide center">
+    <div class="kicker rev">지금 · 딱 하나만</div>
+    <h2 class="rev" style="max-width:20ch;">어떤 일이 제일 <span class="grad">손이 많이 가나요?</span></h2>
+    <div class="timer rev" data-min="3" title="클릭: 일시정지 / 재개"><span class="tval">3:00</span><span class="tlbl">남았어요</span></div>
   </section>
 
   <section class="slide">
