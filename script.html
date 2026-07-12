@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>발표 대본 카드 · AI와 함께 일하기</title>
+<style>
+  :root{--bg:#0a0e17; --card:#121826; --ink:#eef4f9; --muted:#93a3b8; --accent:#13d6c3; --blue:#7aa2ff; --line:rgba(255,255,255,.09); --fs:30px;}
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{background:var(--bg); color:var(--ink); overflow:hidden; line-height:1.62;
+    font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; -webkit-font-smoothing:antialiased;}
+  .app{display:flex; flex-direction:column; height:100vh; height:100dvh;}
+  header{flex:none; display:flex; align-items:center; gap:9px; padding:10px 14px; padding-top:calc(10px + env(safe-area-inset-top)); border-bottom:1px solid var(--line); background:rgba(0,0,0,.25);}
+  .badge{font-weight:900; font-size:21px; background:linear-gradient(135deg,var(--blue),var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; min-width:26px;}
+  .label{font-weight:700; color:var(--muted); font-size:14px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ctl{font-variant-numeric:tabular-nums; font-weight:800; font-size:14px; cursor:pointer; padding:6px 9px; border:1px solid var(--line); border-radius:9px; background:var(--card); color:var(--ink); user-select:none;}
+  .clock{color:var(--accent); min-width:66px; text-align:center;}
+  .clock.paused{color:var(--muted);}
+  .fbtn{width:34px; height:34px; border-radius:9px; border:1px solid var(--line); background:var(--card); color:var(--ink); font-weight:800; font-size:17px; cursor:pointer;}
+  .barwrap{flex:none; height:3px; background:rgba(255,255,255,.06);}
+  .bar{height:100%; background:linear-gradient(90deg,var(--blue),var(--accent)); width:0; transition:width .25s ease;}
+  main{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:28px 22px 130px;}
+  .card{max-width:920px; margin:0 auto;}
+  .kick{color:var(--accent); font-weight:800; font-size:15px; letter-spacing:.06em; margin-bottom:20px;}
+  .line{font-size:var(--fs); margin:0 0 20px; padding-left:16px; border-left:3px solid rgba(122,162,255,.35);}
+  .line:last-child{margin-bottom:0;}
+  .line b{color:#fff;}
+  .next{max-width:920px; margin:24px auto 0; color:var(--muted); font-size:15px; border-top:1px dashed var(--line); padding-top:12px;}
+  .next b{color:var(--blue);}
+  .nav{position:fixed; left:0; right:0; bottom:0; display:flex; gap:12px; padding:14px 16px calc(14px + env(safe-area-inset-bottom));
+    background:linear-gradient(0deg, var(--bg) 40%, rgba(10,14,23,0));}
+  .nav button{flex:1; padding:18px 12px; border-radius:15px; border:1px solid var(--line); background:var(--card); color:var(--ink); font-weight:800; font-size:18px; cursor:pointer;}
+  .nav button.n{flex:2; background:linear-gradient(135deg,var(--blue),var(--accent)); color:#04120f; border:0;}
+  .nav button:active{transform:translateY(1px);}
+  .nav button:disabled{opacity:.35;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <span class="badge" id="badge">1</span>
+    <span class="label" id="label"></span>
+    <span class="ctl fbtn" id="fdown" title="글자 작게">A−</span>
+    <span class="ctl fbtn" id="fup" title="글자 크게">A+</span>
+    <span class="ctl clock paused" id="clock" title="탭: 시작/정지 · 더블탭: 리셋">0:00</span>
+    <span class="ctl" id="prog" title="탭해서 이동">1/65</span>
+  </header>
+  <div class="barwrap"><div class="bar" id="bar"></div></div>
+  <main id="main">
+    <div class="card">
+      <div class="kick" id="kick"></div>
+      <div id="lines"></div>
+      <div class="next" id="next"></div>
+    </div>
+  </main>
+  <div class="nav">
+    <button id="prev">‹ 이전</button>
+    <button class="n" id="nextbtn">다음 ›</button>
+  </div>
+</div>
+<script>
+const DATA = [
+ {n:1, k:"인사 · 오프닝", l:[
+   `안녕하십니까 여러분. <b>'AI와 함께 일하기'</b> 강의를 진행할 <b>변주영</b>입니다.`,
+   `오늘 바라는 건 — <b>여러분도 직접 AI로 귀찮은 업무를 거리낌 없이 해결할 수 있다</b>는 인사이트를 가져가시는 것.`,
+   `이후 활동에서 <b>실제 업무의 귀찮은 일 하나를 자동화</b>해서, 나가서 바로 도움이 되면 좋겠습니다.`]},
+ {n:2, k:"발표자 소개", l:[
+   `간단히 — 저는 <b>6년차 엔지니어이자 2년차 창업가</b>입니다.`,
+   `<b>미리캔버스·모두싸인</b> 같은 SaaS를 2024년까지 약 5년간 프론트엔드로 만들었고,`,
+   `2025년 <b>Strobe·Blubbo</b>라는 Web3 프로덕트로 창업했다가, 급변한 코인 시장에 사업을 접었습니다.`,
+   `2026년 <b>Cofoundary</b>를 만나 공동창업 — 지금은 <b>FDE로 고객사에 직접 나가</b> 문제를 해결·효율화합니다.`,
+   `AX 경력은 길지 않지만, 쌓인 인사이트와 노하우를 최대한 전달드리겠습니다.`]},
+ {n:3, k:"잠깐, 손 한번 (poll)", l:[
+   `짧게 질문부터. <b>AI 써야 하는 건 알겠고 이야기도 많이 들리는데 —</b>`,
+   `<b>정작 우리 회사 어디에 써야 할지 막막</b>하신 분? (손 들어보세요)`]},
+ {n:4, k:"하나 더 (poll)", l:[
+   `하나 더. <b>ChatGPT 몇 번 써봤는데 —</b>`,
+   `<b>업무의 주요 흐름까지 효율화해주진 못한다</b>고 느끼신 분?`]},
+ {n:5, k:"오늘의 약속", l:[
+   `오늘 강의는 <b>여러분을 위한 것</b>입니다.`,
+   `<b>AI로 업무를 효율화하는 툴을 여러분도 만들 수 있다</b>는 걸 보여드리고, 아주 간단한 <b>나만의 툴을 함께</b> 만들어봅니다.`,
+   `오늘 만든 툴이, 여러분이 직접 업무를 <b>자동화해 나가는 시작점</b>이 될 겁니다.`]},
+ {n:6, k:"3년 전이라면", l:[
+   `이게 왜 가능해졌을까요? <b>AI 때문입니다.</b>`,
+   `예전엔 회사 문제 하나를 시스템으로 풀려면 — <b>개발자를 뽑거나 외주를 주고, 며칠~몇 달 온보딩·개발</b>을 해야 했습니다.`]},
+ {n:7, k:"그런데 지금은", l:[
+   `그런데 지금은 <b>간단한 문제는 하루, 아니 10분이면</b> 하실 수 있습니다.`,
+   `오늘은 그게 <b>가능하다는 걸 이해하고, 직접 해보는</b> 시간입니다.`]},
+ {n:8, k:"누구세요? (하는 일)", l:[
+   `제가 하는 일을 간단히 — <b>Cofoundary를 공동창업</b>했고, 최근엔 <b>FDE(실무자)로</b> 뛰고 있습니다.`]},
+ {n:9, k:"지금 하는 일 · FDE", l:[
+   `FDE가 잘 안 와닿으실 텐데 —`,
+   `<b>고객사 현장에 직접 들어가</b> 시스템을 이해하고, 업무를 최적화할 솔루션을 제안·개발하고,`,
+   `고객이 <b>스스로 계속 발전시켜 나갈 수 있게</b> 만들어드리는 일입니다.`]},
+ {n:10, k:"여러분도 할 수 있다", l:[
+   `제가 하는 이 일 — <b>이미 회사 중심에 있는 여러분도 할 수 있다</b>는 걸 말씀드리고 싶습니다.`]},
+ {n:11, k:"사례 둘 · 예고", l:[
+   `두 가지 사례를 준비했어요.`,
+   `① <b>개발 한 번 안 해본</b> 자칭 '문돌이' 유튜버 <b>너진똑</b> — 영상 제작을 자동화해 <b>1억 700만원을 아끼고, 주 4시간 작업을 30분</b>으로.`,
+   `② 제가 <b>실제 고객사에 들어가</b> 어떤 문제를 어떻게 푸는지.`,
+   `<b>먼저 너진똑부터</b> 보시죠. →`]},
+ {n:12, k:"사례 01 · 너진똑", l:[
+   `너진똑은 <b>150만 유튜버</b>입니다.`,
+   `책 리뷰로 시작해 어려운 서적·문헌을 <b>알기 쉽게 풀어주는</b> 영상을 만듭니다.`,
+   `영상 하나에 <b>엄청난 리서치·아트·편집</b>이 들어가는데 — 작년엔 월 1편이던 업로드가 <b>최근 훨씬 빨라졌어요.</b>`,
+   `그 이유를, 최근 영상에서 어느 정도 알 수 있었습니다.`]},
+ {n:13, k:"뭘 만들었냐면", l:[
+   `최근 영상에서 본인이 <b>어떻게 업무를 효율화했는지</b> 이야기합니다.`,
+   `<b>클로드 코드로 한 달간 바이브 코딩</b> — 매주 반복하던 <b>녹음 후처리를 자동화</b>했고,`,
+   `영상 작업용 툴로 <b>직원 업무까지 효율화</b>, 지금은 <b>본인 전용 툴</b>도 만드는 중.`,
+   `그런데 본인 말로는 — <b>그 툴 만들면서 코딩을 처음 해봤다</b>고 합니다.`]},
+ {n:14, k:"효과 · 4시간→30분", l:[
+   `결과는? <b>주 4시간짜리 작업을 30분으로.</b> 한 달이면 <b>14시간</b>을 아낍니다.`,
+   `저는 지난달 이 영상을 처음 봤는데 — 반가우면서도 걱정됐어요.`,
+   `<b>도메인을 잘 아는 사람이 시도만 하면</b> 직접 AX를 하고 툴을 만들어 쓰는 시대. 단순 개발자는 살아남기 어렵겠다.`,
+   `동시에 — 그래서 <b>빠르게 적용해야 하는 곳엔 AX 도움이 더 필요</b>하겠다. 본질은 <b>'내가 시도할 수 있다'는 인사이트</b>가 생기는 지점입니다.`]},
+ {n:15, k:"외주 견적 · 1억 700만", l:[
+   `너진똑이 <b>그 툴의 외주 견적을 AI에게 물어봤다</b>고 합니다.`,
+   `실제 단가야 다르겠지만 — <b>1억 700만원.</b> (AI로 기간 단축된 값이고)`,
+   `<b>정상 견적은 2~3억</b>이라고 했답니다.`]},
+ {n:16, k:"그런데 · 본인이 직접", l:[
+   `<b>이렇게 비싼 툴을, 한 달 만에 AI 구독료만 내고 직접</b> 만들 수 있는 시대가 됩니다.`]},
+ {n:17, k:"비개발자가 어떻게?", l:[
+   `자연스러운 의문 — <b>개발을 모르는데 어떻게?</b>`,
+   `예전엔 개발을 꽤 알아야 했지만, 이제 <b>AI가 지식의 빈 곳을 채워줘서 — 실행보다 계획과 도메인 이해</b>가 중요해졌습니다.`,
+   `앤트로픽 해커톤 <b>최종 우승자가 변호사</b>, 상위 6명 중 <b>4명이 비개발자</b>. 공통점은 <b>자기 도메인에 깊은 이해.</b>`]},
+ {n:18, k:"답은 · 도메인", l:[
+   `<b>정답은 '도메인'</b> — 자기 일을 세세히 아는 전문가가 개발자를 이겼습니다.`,
+   `너진똑도 <b>자기 영상 제작의 어렵고 반복되는 지점을 잘 알았기에</b> 자동화를 도입할 수 있었던 거예요.`]},
+ {n:19, k:"너진똑의 말", l:[
+   `<b>여러분이 겪는 불편함은 — 말하지 않으면 개발자도 AI도 모릅니다.</b>`,
+   `그 불편함이 곧 <b>여러분만의 노하우</b>가 됩니다.`]},
+ {n:20, k:"그리고 · 무기가 된다", l:[
+   `그냥 두면 불편함이지만 — <b>해결하면, 경쟁자보다 빠르게 성장시킬 무기</b>가 됩니다.`,
+   `개발자로서도 그래요. <b>불편함을 빠르게 캐치해 노하우로 만들 때</b> 크게 성장합니다.`,
+   `여러분 사업도 — <b>여러분의 불편함이 성장의 원동력</b>이 됩니다.`]},
+ {n:21, k:"사례 02 · 제 경험", l:[
+   `여기까진 <b>비개발자가 바이브 코딩으로 자기 문제를 푼</b> 사례였고 —`,
+   `이번엔 <b>제가 현장에 들어가</b> 고객이 어떤 불편을 갖고, 어떤 문제를 푸는지, <b>결국 뭐가 중요했는지</b> 말씀드립니다.`,
+   `저는 <b>서로 다른 도메인의 두 회사</b>에 나가 있습니다.`]},
+ {n:22, k:"3주 동안 한 건 · 듣기", l:[
+   `최근 <b>에너지 발전사(두 번째 고객사)</b>에 갔는데 — <b>3주간 주로 한 건 '듣는 것'</b>이었어요.`,
+   `가서 바로 코딩? 아닙니다. <b>고객의 불편을 듣고, 어디가 병목인지, 어떻게 자동화로 녹일지</b> 파악하는 게 대부분.`,
+   `그다음 <b>자동화 계획을 세우고, 인터뷰로 'ROI가 높은지'를 판단</b>합니다.`]},
+ {n:23, k:"에너지 · 요금청구 8단계", l:[
+   `첫 고객사는 <b>신재생에너지 발전 회사.</b> 인터뷰로 알게 된 건 — <b>요금·청구 업무가 대부분 수동</b>이라는 것.`,
+   `요금제 확인 → 정책문서로 할인율 계산 → 엑셀로 요금 계산 → PDF 청구서 → 메일 발송 → 입금 내역 수기 기입.`,
+   `<b>정보가 여러 소스에 흩어져 있고 전부 사람 손</b> — 실수 지점도 많고 담당자 피로도가 높았습니다. (자세한 단계는 화면 참고)`]},
+ {n:24, k:"그래서 자동화 중", l:[
+   `분석해보니 — <b>사람이 꼭 해야 할 부분은 적었어요.</b>`,
+   `<b>모으고·판별·계산·청구는 자동화 가능</b>, 마지막 <b>입금 확인만 사람</b>이 하면 되는 일.`,
+   `인터뷰로 이 과제를 선별해, <b>고객과 함께 자동화해 나가는 중</b>입니다.`]},
+ {n:25, k:"광고 대행사도", l:[
+   `두 번째는 <b>광고대행사.</b> 네이버 <b>검색·쇼핑·GFA</b> 광고를 각각 다른 플랫폼에서 집행했는데,`,
+   `마케터가 <b>세 플랫폼을 오가며 집행하고, 결과도 일일이 취합해 엑셀 리포트</b>를 매주 만들고 있었어요.`,
+   `→ <b>세 곳 데이터를 자동으로 모으고, AI가 리포트를 작성</b>하게. 여기서도 <b>결과·판단만 사람.</b>`,
+   `두 사례 공통점 — <b>흩어진 정보를 모으고 자동화하는 게 효율화의 시작점.</b>`]},
+ {n:26, k:"그래서 알게 된 것", l:[
+   `두 회사에서 느낀 건 — <b>AX란, 실무자에게 업무의 비효율을 듣고, 병목을 찾아, AI로 빠르게 푸는 것.</b>`,
+   `<b>AI 도구가 들어가는 건 부차적</b> — 가장 중요한 건 <b>'어디가 병목인지' 파악</b>입니다.`]},
+ {n:27, k:"이게 핵심 · 여러분이 앞서있다", l:[
+   `<b>그리고 이게 핵심입니다.</b>`,
+   `저는 <b>몰라서 3주를 들었어요.</b> 그 업종에 몇 년째 계신 여러분은 — <b>대표로서 문제를 가장 잘 아시는 분들.</b>`,
+   `<b>여러분이 문제를 정의할 수 있을 때, 저보다 훨씬 빠르게</b> 문제 해결을 시작하실 수 있습니다.`]},
+ {n:28, k:"관점 전환 · 대표님이세요", l:[
+   `<b>여러분이 대표님이기 때문</b>입니다.`,
+   `<b>문제를 발견·정의하고, 어떻게 풀지 전략을 정하는 사람</b> — 그게 AX에 필요한 바로 그 능력입니다.`]},
+ {n:29, k:"머리 / 손과 발", l:[
+   `회사에서 여러 직원이 여러분 일을 대신하듯 — <b>AI도 똑같습니다.</b>`,
+   `<b>여러분이 판단하면, AI가 손과 발이 되어</b> 비효율을 해결합니다.`]},
+ {n:30, k:"그러니 · 문제 정의만", l:[
+   `<b>문제 정의만 잘 하시면 됩니다.</b>`]},
+ {n:31, k:"흔한 착각", l:[
+   `짚고 갈 게 — 보통 AX라 하면 <b>'AI 도구 하나 만들어 회사에 도입'</b>을 떠올리시는데,`,
+   `<b>저는 그게 아니라고 생각합니다.</b>`]},
+ {n:32, k:"근데 아니에요 · 본질", l:[
+   `그보다 중요한 건 — <b>문제를 같이 정의하고, ROI 높은 것부터 자동화로 효율화</b>하는 것.`,
+   `그리고 그 과정에서 <b>구성원이 AI를 거리낌 없이 쓰게 만드는 것 — 그게 AX</b>입니다.`,
+   `저희가 현장에서 하는 것도 같아요: <b>함께 문제 파악 → AI로 빠르게 푸는 걸 보여주고 → 계속 업데이트하도록 가이드 → 떠남.</b>`]},
+ {n:33, k:"그래서 제 순서는 늘", l:[
+   `저희 순서는 늘 같아요 — <b>① 듣고 ② 같이 정의하고 ③ 쪼개서 자동화 가능한지 판단 ④ AI로 싸게 풀어 보여주기.</b>`,
+   `AI로 판단·해석까지 자동화할 수 있으면 거기까지 해드립니다.`]},
+ {n:34, k:"희소한 건 · 비효율 아는 사람", l:[
+   `<b>AI는 누구나 씁니다.</b>`,
+   `강력하고 희소한 건 — <b>'뭐가 비효율인지 알고, 그걸 풀 줄 아는 사람'.</b> 그게 <b>여러분</b>입니다.`]},
+ {n:35, k:"그리고 사실… (60분 압축)", l:[
+   `제가 드린 '여러분도 할 수 있다'는 이야기 — 고객사에서 실제로 하는 일이고,`,
+   `남은 시간 실습도 <b>그 과정을 압축</b>한 겁니다.`,
+   `<b>먼저 실생활 시나리오 하나를 같이 풀어보고 → 그다음 대표님들이 직접</b> 해봅니다.`]},
+ {n:36, k:"예시", l:[
+   `제가 가져온 사례 — <b>가구 판매 1인 사업자 '김오션' 씨의 월요일</b>입니다.`]},
+ {n:37, k:"라이브 데모 · 김오션 메일", l:[
+   `월요일 아침, 김오션 대표에게 <b>메일 한 통</b> — <b>대성퍼니처 구매팀의 견적 요청.</b>`,
+   `<b>사무용 의자 40개, 높이조절 책상 25개, 회의용 테이블 6개.</b>`,
+   `견적서엔 가격·수량·부가세 계산이 필요하고 — <b>회사소개서·사업자등록증·제품소개서를 한 PDF로 합쳐</b> 보내달라는 요청까지.`]},
+ {n:38, k:"기존 흐름 · 앱 6개", l:[
+   `견적서 하나 보내려고 <b>앱 6개</b>를 오갑니다.`,
+   `이메일 확인 → 엑셀 견적·계산 → PDF 저장 → 파일 탐색기로 서류 찾기 → PDF 합치기로 4개 병합 → 이메일 발송.`,
+   `<b>한 건에 약 23분.</b> 하루 5건이면 <b>115분</b>, 한 달이면 약 <b>38시간</b>입니다.`]},
+ {n:39, k:"그래서 · 자동으로 안 되나", l:[
+   `<b>'이거… 매번 똑같은데, 그냥 자동으로 안 되나?'</b>`,
+   `귀찮아진 김오션 씨, <b>AI로 자동화</b>를 해보기로 결심합니다.`]},
+ {n:40, k:"자동화 · 김오션이 한 일", l:[
+   `한 일은 — <b>업무 순서를 그대로 적고, 원하는 결과를 적어</b> ChatGPT에 물어본 것.`,
+   `<b>① 업무 적기 → ② 결과 고르기(PDF·계산·묶기) → ③ 프롬프트 복사 → ChatGPT.</b> 코딩은 한 줄도 없이.`]},
+ {n:40, k:"그대로 붙여넣으면", l:[
+   `그랬더니 — <b>ChatGPT가 그 자리에서 도구를 만들어줬어요.</b>`,
+   `<b>약 3분</b> 기다렸더니, <b>바로 다운로드해 쓸 수 있는 툴</b>을 만들어줬습니다.`]},
+ {n:41, k:"결과물 · 견적 도구", l:[
+   `이게 그 결과물입니다.`,
+   `거래처 이름·이메일 적으면 자동 기입, 견적일·제목·보내는 사람 등 <b>회사별로 다른 부분</b>도 입력 가능.`,
+   `<b>품목·수량 넣으면 단가·총액 자동 계산</b>, 요청받은 <b>3개 파일을 한 PDF로 병합</b>까지.`,
+   `저도 이 앱 만들 때 — <b>초판 기능은 5분 내, 다듬는 데 약 30분</b> 걸렸습니다.`]},
+ {n:42, k:"달라진 흐름", l:[
+   `결과적으로 김오션 씨는 — <b>하루 115분 걸리던 일을 15분에.</b>`,
+   `앱 6개 오가던 걸 <b>한 화면에서 3분</b>에. 남는 시간은 <b>정말 중요한 문제</b>에 씁니다.`]},
+ {n:43, k:"방금 보셨죠", l:[
+   `보셨듯 — <b>AI 툴 만드는 데 우리가 할 일은 거의 없어요.</b>`,
+   `우리 몫은: <b>불편함을 인지하고, 말로 표현하고, 그 업무가 어떤 단계로 일어나는지, 자동화해달라고 AI에 요청</b>하는 것.`,
+   `그러면 자연스럽게 — <b>'내 업무 중에 이런 게 불편한데…'</b> 가 떠오르실 겁니다.`]},
+ {n:44, k:"뭐가 후보일까", l:[
+   `많은 일 중 <b>이런 게 도구화하기 좋습니다:</b>`,
+   `<b>① 매번 같은 순서 ② 여러 정보·앱을 오감 ③ 양식·계산이 정해져 있음 ④ 자주 반복돼 임팩트 큼.</b>`,
+   `김오션 씨의 <b>견적 발송이 딱 여기</b> 해당했죠.`]},
+ {n:45, k:"기억하세요", l:[
+   `<b>'이 신호에 걸리는 일은 나만의 도구로 만들 수 있다'</b> — 이 생각으로 업무를 보면, <b>도구 만들기 첫 단계가 쉬워집니다.</b>`]},
+ {n:46, k:"여기서부터 · 핸즈온 예고", l:[
+   `이제 <b>약 18분간 실습</b>입니다.`,
+   `<b>① 귀찮은 일 떠올리기 3분 → ② 준비한 툴로 프롬프트 10분 → ③ ChatGPT로 5분</b>, 가장 간단한 문제의 도구 초안을 만듭니다.`,
+   `<b>폰만 있으면 됩니다.</b> 실제 업무 환경에서 돌려보고 싶으면 컴퓨터를. 없으면 폰으로 따라오시고 집에서 확인하셔도 됩니다.`,
+   `그리고 만드신 프롬프트로 <b>약 5분간 제가 앞에서</b> 함께 진행해보겠습니다.`]},
+ {n:47, k:"딱 두 단계 · 그리고 반복", l:[
+   `여러분이 할 단계는 <b>딱 두 개.</b>`,
+   `<b>① 정의</b> — 가장 잘 아는 내 도메인의 귀찮은 일을 정하고, 순서를 적는다. <b>② 실행</b> — AI에 전달해 만들게 하고, 결과 보고 피드백.`,
+   `이 <b>두 단계를 반복</b>하며 원하는 도구로 다듬어 갑니다. (회사에서 초안 보고 피드백하듯)`]},
+ {n:48, k:"활동 1 · 딱 하나 고르기", l:[
+   `여러분 업무에서 <b>귀찮은 일 딱 하나</b>를 떠올려 보세요.`]},
+ {n:49, k:"3개 말고 딱 하나", l:[
+   `거창한 것 말고 — <b>메일 보내기나 김오션 사례처럼, 매번 손 많이 가지만 간단한 문제</b>를 고르시는 게 좋습니다.`]},
+ {n:50, k:"3분 타이머", l:[
+   `<b>3분 드리겠습니다.</b> 가장 귀찮은 일을 <b>한 문장</b>으로 요약해보세요.`,
+   `펜 있으시면 손으로, 없으면 <b>생각만 하셔도</b> 됩니다. (화면 타이머 시작)`]},
+ {n:51, k:"용어 · 프롬프트란", l:[
+   `이제 AI에 일을 시킬 건데, 이때 <b>프롬프트</b>를 적습니다.`,
+   `<b>프롬프트 = AI한테 시킬 일을 적는 것.</b> 거창한 게 아니라 그냥 <b>'이런 거 해줘'</b> 하는 요청입니다.`]},
+ {n:52, k:"근데 막상 해보면", l:[
+   `원래는 <b>단계를 직접 적고, 불편한 지점을 구조적으로 쓰고, 기술적 맥락까지</b> 줘야 합니다.`,
+   `근데 처음엔 이게 어렵죠. 그래서 — <b>질문에만 답하면 프롬프트를 만들어주는 도구</b>를 준비해왔습니다.`]},
+ {n:53, k:"툴 직접 (10분)", l:[
+   `<b>QR로 폰에서 바로</b> 접속 → 폼을 채우고 <b>'프롬프트 만들기 + 발표자에게 전송하기'</b>를 눌러주세요. (제가 앞에서 보고 하나 골라 함께 진행)`,
+   `<b>10분</b> 드립니다. 핵심은 — <b>회사 / 만들 툴 이름(아까 생각한 것) / 누가·어디서 / 업무 단계.</b> 업무 단계가 제일 중요.`,
+   `아래는 참고 맥락 — <b>귀찮은/실수 나는 부분, 입력·업로드할 정보, 버튼 누르면 나올 결과, 꼭 지킬 점.</b>`,
+   `회색 예시글 참고해 <b>짧게</b> 적으시고 — 초안 보고 더 채우면 되니 <b>부담 없이.</b>`]},
+ {n:54, k:"그다음 · 실행 (5분)", l:[
+   `나온 프롬프트를 <b>ChatGPT에 붙여넣으세요.</b>`,
+   `잠깐 뒤 — <b>바로 확인 가능한 나만의 업무 도구 첫 초안</b>이 나옵니다.`,
+   `마음에 안 들면 <b>피드백을 주며 개선.</b> <b>5분</b> 드립니다.`]},
+ {n:55, k:"이제 진짜 시작", l:[
+   `5분 지났으니 — <b>처음으로 AI로 내 업무를 조금이나마 덜어주는 도구</b>를 만들어 보셨을 겁니다.`,
+   `첫 버전이 바로 완벽하진 않아도 — <b>계속 피드백하며 개선하면, 원하는 수준의 업무 도구</b>가 됩니다.`]},
+ {n:56, k:"실전 팁", l:[
+   `피드백 과정 <b>팁 네 가지:</b>`,
+   `<b>① 모르면 그냥 물어보기</b> — 어려운 용어 나오면 '쉽게 설명해', AI가 친절히 답합니다.`,
+   `<b>② 채팅을 역할별로</b> — 기획자·도메인 전문가 채팅을 따로 열고 복사·붙여넣기로 의견 교환하듯 개발.`,
+   `<b>③ 가끔 '고수인 척'</b> — 초보인 척하면 쉬운 기술만 골라요. 다른 AI에 검토시켜 더 나은 방법을 가져오세요.`,
+   `<b>④ 한 번에 만족 X, 반복</b> — 한 번에 원하는 툴 나오는 경우는 적습니다. 계속 피드백하며 개선.`]},
+ {n:57, k:"발표하기 · 라이브 (5분)", l:[
+   `한두 분 것만 같이 보면 좋을 것 같은데 — <b>완성하신 분 계신가요?</b> 있으면 <b>대화 공유하기로 이메일</b> 보내주세요.`,
+   `없으면 — <b>여러분이 쓴 프롬프트를 제가 실시간으로 AI에 넣어 개선하는 모습을 약 5분</b> 보여드리겠습니다.`,
+   `<b>[백업]</b> 제출이 없거나 폼이 안 들어오면 → 미리 준비한 예시 프롬프트로 진행.`]},
+ {n:58, k:"혼자서도 되지만 · 다만", l:[
+   `오늘 하셨듯 — <b>더 큰 것도 여러분이 직접 만들고 개선하실 수 있습니다.</b>`,
+   `다만 여기서부턴 <b>도메인 지식 외에 기술 지식·추가 비용</b>이 들 수 있어요.`,
+   `<b>데이터 저장, 여러 명 사용, 기존 시스템 연동, 보안 강화</b> 같은 순간이 오면,`,
+   `시간을 많이 써서 AI 도움받아 직접 하실 수도, <b>저희와 함께 안전하게</b> 푸실 수도 있습니다.`]},
+ {n:59, k:"방금, 시작하신 겁니다", l:[
+   `여러분은 방금 — <b>저희가 현장에서 FDE로 하는 일을 직접 시작</b>하신 겁니다.`]},
+ {n:60, k:"Cofoundary · 우리가 하는 일", l:[
+   `저희를 다시 소개하며 정리하면 — 저희는 <b>여러분이 방금 하신 것처럼 고객사에 가서, 문제를 정리하고 업무 효율화 도구를 함께</b> 만들어드립니다.`,
+   `그 과정을 <b>구성원과 공유해, AI로 직접 문제를 푸는 데 거리낌 없게</b> 만드는 데 초점. <b>파운더처럼 함께</b> 풀어갑니다.`]},
+ {n:61, k:"4단계 공정", l:[
+   `저희 일은 <b>4단계</b> — <b>① 진단 → ② 에이전트·툴 빠르게 구축 → ③ 운영 → ④ 직접 운용하도록 자산화</b> 후 떠납니다.`]},
+ {n:62, k:"그러니 · 네트워킹", l:[
+   `관심 있으시면 — <b>이따 네트워킹 때 편하게 찾아와</b> 주세요.`]},
+ {n:63, k:"답의 절반", l:[
+   `발표를 마치며 — 여러분은 오늘 해보셨듯 <b>이미 답을 알고 계시고, 직접 실행만</b> 하시면 됩니다.`,
+   `<b>오늘 메모한 것 가지고, 내일 출근해서 바로 AI에게 시켜보시죠.</b>`]},
+ {n:64, k:"감사합니다", l:[
+   `<b>감사합니다.</b>`]}
+];
+const N = DATA.length;
+const $ = id => document.getElementById(id);
+let i = 0;
+
+function clampFs(v){ return Math.max(20, Math.min(46, v)); }
+let fs = clampFs(parseInt(localStorage.getItem('scriptFs')||'30',10));
+function applyFs(){ document.documentElement.style.setProperty('--fs', fs+'px'); localStorage.setItem('scriptFs', fs); }
+
+function render(){
+  const c = DATA[i];
+  $('badge').textContent = i+1;
+  $('label').textContent = c.k;
+  $('kick').textContent = c.k;
+  $('lines').innerHTML = c.l.map(x => `<div class="line">${x}</div>`).join('');
+  $('prog').textContent = (i+1)+'/'+N;
+  $('bar').style.width = ((i+1)/N*100)+'%';
+  const nx = DATA[i+1];
+  $('next').innerHTML = nx ? `→ 다음: <b>${nx.k}</b>` : '— 마지막 슬라이드 —';
+  $('prev').disabled = i===0;
+  $('nextbtn').disabled = i===N-1;
+  $('main').scrollTop = 0;
+  history.replaceState(null,'','#'+(i+1));
+}
+function go(d){ const t=Math.max(0,Math.min(N-1,i+d)); if(t!==i){ i=t; render(); } }
+function jump(n){ const t=Math.max(0,Math.min(N-1,n-1)); i=t; render(); }
+
+$('prev').onclick = ()=>go(-1);
+$('nextbtn').onclick = ()=>go(1);
+$('fup').onclick = ()=>{ fs=clampFs(fs+2); applyFs(); };
+$('fdown').onclick = ()=>{ fs=clampFs(fs-2); applyFs(); };
+$('prog').onclick = ()=>{ const a=prompt('이동할 슬라이드 (1-'+N+')', i+1); if(a!==null){ const p=parseInt(a,10); if(!isNaN(p)) jump(p); } };
+
+document.addEventListener('keydown', e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){ e.preventDefault(); go(1); }
+  else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){ e.preventDefault(); go(-1); }
+  else if(e.key==='Home') jump(1);
+  else if(e.key==='End') jump(N);
+});
+
+// 스와이프 (좌우)
+let x0=null,y0=null;
+const main=$('main');
+main.addEventListener('touchstart', e=>{ x0=e.touches[0].clientX; y0=e.touches[0].clientY; },{passive:true});
+main.addEventListener('touchend', e=>{
+  if(x0===null) return;
+  const dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0;
+  if(Math.abs(dx)>70 && Math.abs(dx)>Math.abs(dy)*1.5){ go(dx<0?1:-1); }
+  x0=y0=null;
+});
+
+// 경과 타이머
+let secs=0, running=false, tid=null;
+function fmtT(s){ const m=Math.floor(s/60); return m+':'+String(s%60).padStart(2,'0'); }
+function drawClock(){ $('clock').textContent = fmtT(secs); $('clock').classList.toggle('paused', !running); }
+$('clock').onclick = ()=>{ running=!running; if(running){ tid=setInterval(()=>{ secs++; drawClock(); },1000); } else { clearInterval(tid); } drawClock(); };
+$('clock').ondblclick = ()=>{ clearInterval(tid); running=false; secs=0; drawClock(); };
+
+// 화면 꺼짐 방지
+let wake=null;
+async function keepAwake(){ try{ if('wakeLock' in navigator){ wake=await navigator.wakeLock.request('screen'); } }catch(e){} }
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') keepAwake(); });
+window.addEventListener('hashchange', ()=>{ const m=(location.hash||'').match(/\d+/); if(m){ const p=parseInt(m[0],10)-1; if(!isNaN(p)&&p!==i&&p>=0&&p<N){ i=p; render(); } } });
+
+applyFs();
+const m0=(location.hash||'').match(/\d+/); if(m0){ const p=parseInt(m0[0],10)-1; if(!isNaN(p)&&p>=0&&p<N) i=p; }
+render(); drawClock(); keepAwake();
+</script>
+</body>
+</html>
