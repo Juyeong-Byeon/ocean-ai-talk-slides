@@ -25,9 +25,9 @@ python3 -m http.server 8080
 
 특강에서 쓴 도구들. GitHub Pages에서 바로 접근됩니다.
 
-- **도구 모음**: [`/tools/`](https://juyeong-byeon.github.io/ocean-ai-talk-slides/tools/)
-- **업무툴 프롬프트 빌더**: [`/tools/prompt-builder.html`](https://juyeong-byeon.github.io/ocean-ai-talk-slides/tools/prompt-builder.html)
-- **견적서 작성 프로그램**: [`/tools/quote-builder.html`](https://juyeong-byeon.github.io/ocean-ai-talk-slides/tools/quote-builder.html)
+- **도구 모음**: [`/tools/`](https://cofoundary.github.io/ocean-ai-talk-slides/tools/)
+- **업무툴 프롬프트 빌더**: [`/tools/prompt-builder.html`](https://cofoundary.github.io/ocean-ai-talk-slides/tools/prompt-builder.html)
+- **견적서 작성 프로그램**: [`/tools/quote-builder.html`](https://cofoundary.github.io/ocean-ai-talk-slides/tools/quote-builder.html)
 
 ## 구성
 
